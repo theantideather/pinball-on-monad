@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8">
+  <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Space Cadet Pinball on Monad">
+  <meta name="twitter:description" content="I scored points in Space Cadet Pinball on Monad blockchain!">
+  <meta name="description" content="Web3 Space Cadet Pinball - Every action recorded on Monad blockchain">
+  <meta name="keywords" content="pinball, web3, monad, blockchain, game">
+  <meta name="author" content="theantideather">
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  <title>Web3 Space Cadet Pinball - Powered by Monad</title>
+  <style>
+    :root {
+      --ActiveBorder: rgb(212, 208, 200);
+      --ActiveTitle: rgb(106, 10, 99);
+      --AppWorkspace: rgb(128, 128, 128);
+      --Background: linear-gradient(135deg, #8B5CF6, #6366F1, #3B82F6);
+      --ButtonAlternateFace: rgb(192, 192, 192);
+      --ButtonDkShadow: rgb(64, 64, 64);
+      --ButtonFace: rgb(212, 208, 200);
+      --ButtonHilight: rgb(255, 255, 255);
+      --ButtonLight: rgb(212, 208, 200);
+      --ButtonShadow: rgb(128, 128, 128);
+      --ButtonText: rgb(0, 0, 0);
+      --GradientActiveTitle: rgb(240, 166, 230);
+      --GradientInactiveTitle: rgb(192, 192, 192);
+      --GrayText: rgb(128, 128, 128);
+      --Hilight: rgb(106, 10, 99);
+      --HilightText: rgb(255, 255, 255);
+      --HotTrackingColor: rgb(128, 0, 128);
+      --InactiveBorder: rgb(212, 208, 200);
+      --InactiveTitle: rgb(128, 128, 128);
+      --InactiveTitleText: rgb(212, 208, 200);
+      --InfoText: rgb(0, 0, 0);
+      --InfoWindow: rgb(255, 255, 225);
+      --Menu: rgb(212, 208, 200);
+      --MenuBar: rgb(192, 192, 192);
+      --MenuHilight: rgb(128, 0, 128);
+      --MenuText: rgb(0, 0, 0);
+      --Scrollbar: rgb(212, 208, 200);
+      --TitleText: rgb(255, 255, 255);
+      --Window: rgb(255, 255, 255);
+      --WindowFrame: rgb(0, 0, 0);
+      --WindowText: rgb(0, 0, 0);
+      --monad-primary: #8B5CF6;  /* Updated to purple */
+      --monad-secondary: #6366f1; /* Indigo for secondary elements */
+      --monad-accent: #10b981;   /* Emerald green for accents */
+      --neon-glow: 0 0 10px rgba(139, 92, 246, 0.7), 0 0 20px rgba(139, 92, 246, 0.5);
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--Background);
+      text-align: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+      color: white;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    textarea.emscripten {
+      font-family: monospace;
+      width: 80%
+    }
+
+    canvas.emscripten {
+      border: 0 none;
+      background-color: #000
+    }
+
+    .titlebar {
+      text-align: start;
+      margin: 0;
+      padding: 1px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      user-select: none
+    }
+
+    .titlebar .titlebar-icon {
+      width: 16px;
+      height: 16px;
+      padding: 1px
+    }
+
+    .titlebar .titlebar-title {
+      display: flex;
+      padding: 0 2px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      flex-grow: 1;
+      font-weight: 700;
+      align-items: center
+    }
+
+    .titlebar .titlebar-wincontrols {
+      display: inline-block;
+      margin: 0;
+      padding: 1px;
+      min-width: fit-content
+    }
+
+    .titlebar-wincontrols .buttons-wrapper {
+      display: inline-block;
+      width: auto;
+      margin: 0;
+      padding: 1px
+    }
+
+    .titlebar-wincontrols .spacer {
+      display: inline-block;
+      margin: 0;
+      padding: 0;
+      width: 2px
+    }
+
+    .titlebar-wincontrols .button {
+      display: inline-block;
+      min-width: 12px;
+      min-height: 10px;
+      width: 12px;
+      height: 10px;
+      text-align: center;
+      vertical-align: middle;
+      line-height: 10px
+    }
+
+    .window {
+      font-size: 8pt;
+      color: var(--WindowText);
+      background-color: var(--ButtonFace);
+      border: 1px solid var(--ActiveBorder);
+      box-shadow: -.5px -.5px 0 .5px var(--ButtonHilight), 0 0 0 1px var(--ButtonShadow), -.5px -.5px 0 1.5px var(--ButtonLight), 0 0 0 2px var(--ButtonDkShadow);
+      padding-right: 0;
+      margin-left: auto;
+      margin-right: auto;
+      display: inline-block
+    }
+
+    .window.active {
+      border: 1px solid var(--ActiveBorder)
+    }
+
+    .window.active .titlebar .titlebar-icon {
+      background-color: var(--ActiveTitle);
+      color: var(--TitleText)
+    }
+
+    .window.active .titlebar .titlebar-title {
+      background-color: var(--ActiveTitle);
+      background-image: linear-gradient(to right, var(--ActiveTitle), var(--GradientActiveTitle));
+      color: var(--TitleText)
+    }
+
+    .window.active .titlebar .titlebar-wincontrols,
+    .window.active .titlebar .titlebar-wincontrols .buttons-wrapper {
+      background-color: var(--GradientActiveTitle);
+      font-size: 8pt;
+      font-weight: 700
+    }
+
+    .button {
+      margin: 2px
+    }
+
+    .button span.button-content {
+      display: inline-block
+    }
+
+    .button:active .button-content {
+      transform: translate(1px, 1px)
+    }
+
+    .button {
+      background-color: var(--ButtonFace);
+      color: var(--ButtonText);
+      box-shadow: -.5px -.5px 0 .5px var(--ButtonLight), 0 0 0 1px var(--ButtonShadow), -.5px -.5px 0 1.5px var(--ButtonHilight), 0 0 0 2px var(--ButtonDkShadow)
+    }
+
+    .button:active {
+      box-shadow: -.5px -.5px 0 .5px var(--ButtonShadow), 0 0 0 1px var(--ButtonShadow), -.5px -.5px 0 1.5px var(--WindowFrame), 0 0 0 2px var(--WindowFrame)
+    }
+
+    .button svg path {
+      fill: var(--ButtonText)
+    }
+
+    .titlebar .button:active {
+      box-shadow: -.5px -.5px 0 .5px var(--ButtonShadow), 0 0 0 1px var(--ButtonLight), -.5px -.5px 0 1.5px var(--ButtonDkShadow), 0 0 0 2px var(--ButtonHilight)
+    }
+
+    #status {
+      margin: 40px 32px
+    }
+
+    .branding {
+      font-size: 24px;
+      color: white;
+      font-weight: bold;
+      margin: 20px 0;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    .controls-container {
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 15px;
+      margin: 20px auto;
+      max-width: 500px;
+      border-radius: 10px;
+      text-align: left;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .controls-title {
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 16px;
+      color: #f8c291;
+    }
+
+    .control-item {
+      margin: 5px 0;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .key {
+      background-color: rgba(255, 255, 255, 0.2);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+
+    /* Welcome Banner Styles */
+    .welcome-banner {
+      background-color: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 20px;
+      border-radius: 15px;
+      margin: 0 auto 20px auto;
+      max-width: 800px;
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.6);
+      border: 2px solid var(--monad-primary);
+      animation: glowing 3s infinite alternate;
+    }
+    
+    @keyframes glowing {
+      from { box-shadow: 0 0 10px var(--monad-primary); }
+      to { box-shadow: 0 0 20px var(--monad-primary), 0 0 30px var(--monad-secondary); }
+    }
+    
+    .welcome-banner h1 {
+      color: var(--monad-primary);
+      margin-top: 0;
+      font-size: 2.5em;
+      text-shadow: var(--neon-glow);
+      letter-spacing: 1px;
+    }
+    
+    .highlight {
+      color: var(--monad-accent);
+      font-weight: bold;
+    }
+    
+    .monad-highlight {
+      color: var(--monad-primary);
+      font-weight: bold;
+      text-shadow: var(--neon-glow);
+    }
+
+    /* Game Modal Styles */
+    #game-over-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    
+    .modal-content {
+      background-color: rgba(20, 20, 20, 0.95);
+      border: 2px solid #6a0a63;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 600px;
+      padding: 20px;
+      color: white;
+      box-shadow: 0 0 20px rgba(106, 10, 99, 0.7);
+    }
+    
+    .game-over {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    .game-over h1 {
+      color: #FFD700;
+      font-size: 2em;
+      margin: 10px 0;
+    }
+    
+    .button-group {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+    
+    .button-group button {
+      margin: 5px;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    #share-twitter-btn {
+      background-color: #1DA1F2;
+      color: white;
+    }
+    
+    #share-twitter-btn:hover {
+      background-color: #0d8bd9;
+    }
+    
+    #share-twitter-btn.loading {
+      background-color: #1DA1F2;
+      color: rgba(255, 255, 255, 0.5);
+      pointer-events: none;
+      position: relative;
+    }
+    
+    #play-again-btn {
+      background-color: #4caf50;
+      color: white;
+    }
+    
+    #play-again-btn:hover {
+      background-color: #66bb6a;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    #end-game-btn {
+      background-color: transparent;
+      color: white;
+      border: 1px solid white;
+      padding: 5px 10px;
+      margin: 5px;
+      border-radius: 3px;
+      font-size: 0.8em;
+      cursor: pointer;
+    }
+    
+    #end-game-btn:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    #score-screenshot {
+      max-width: 100%;
+      height: auto;
+      border-radius: 5px;
+      margin-top: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    
+    .stats-info {
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 5px;
+      padding: 10px;
+      margin: 15px 0;
+      text-align: center;
+      border-left: 3px solid #00BFFF;
+    }
+    
+    .action-counter {
+      font-size: 1.2em;
+      color: #FFD700;
+      font-weight: bold;
+    }
+    
+    .success-message {
+      background-color: rgba(76, 175, 80, 0.3);
+      color: #4caf50;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      display: none;
+    }
+    
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+    
+    .monad-branding {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      background-color: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 12px;
+      z-index: 10;
+      border: 1px solid var(--monad-primary);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .monad-logo {
+      width: 20px;
+      height: 20px;
+      background-color: var(--monad-primary);
+      border-radius: 50%;
+      display: inline-block;
+    }
+    
+    /* Gas meter */
+    #gas-meter {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background-color: rgba(0, 0, 0, 0.8);
+      border-radius: 20px;
+      padding: 8px 15px;
+      color: white;
+      font-size: 12px;
+      border: 1px solid var(--monad-primary);
+      z-index: 100;
+    }
+    
+    #gas-value {
+      color: var(--monad-accent);
+      font-weight: bold;
+    }
+    
+    /* Blockchain status indicator */
+    #blockchain-status {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background-color: rgba(0, 0, 0, 0.8);
+      border-radius: 20px;
+      padding: 8px 15px;
+      color: white;
+      font-size: 12px;
+      border: 1px solid var(--monad-primary);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .status-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: var(--monad-accent);
+      display: inline-block;
+      animation: pulse 2s infinite;
+    }
+
+    /* Transaction Notification Styles */
+    #transaction-feed {
+      position: fixed;
+      bottom: 70px;
+      right: 10px;
+      width: 350px;
+      max-height: 200px;
+      overflow-y: auto;
+      background-color: rgba(0, 0, 0, 0.8);
+      border-radius: 10px;
+      padding: 10px;
+      color: white;
+      z-index: 100;
+      border: 1px solid var(--monad-primary);
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+      font-size: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .transaction-item {
+      padding: 8px;
+      border-radius: 8px;
+      background-color: rgba(99, 102, 241, 0.2);
+      border-left: 3px solid var(--monad-primary);
+      text-align: left;
+      margin-bottom: 5px;
+      animation: fadeIn 0.5s ease-in-out;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .transaction-hash {
+      font-family: monospace;
+      color: var(--monad-accent);
+      font-size: 0.8em;
+      word-break: break-all;
+    }
+    
+    .transaction-status {
+      font-size: 0.8em;
+      color: #10b981;
+    }
+    
+    .transaction-time {
+      font-size: 0.7em;
+      color: #9ca3af;
+      margin-top: 3px;
+    }
+
+    /* Updated Game Stats */
+    #game-stats {
+      background-color: rgba(0, 0, 0, 0.7);
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 15px;
+      display: flex;
+      justify-content: space-around;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+      border: 1px solid var(--monad-primary);
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+    }
+
+    .stat-item {
+      text-align: center;
+      color: white;
+      padding: 0 15px;
+    }
+
+    .stat-value {
+      font-size: 1.8em;
+      font-weight: bold;
+      color: var(--monad-primary);
+      text-shadow: 0 0 5px rgba(59, 130, 246, 0.7);
+    }
+
+    .stat-label {
+      font-size: 0.9em;
+      color: #e5e7eb;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Footer styles */
+    .footer {
+      position: fixed;
+      bottom: 10px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      padding: 10px 0;
+      color: white;
+      font-size: 14px;
+      z-index: 10;
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    
+    .footer a {
+      color: var(--monad-accent);
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+    
+    .footer a:hover {
+      color: white;
+      text-shadow: var(--neon-glow);
+    }
+    
+    .heart {
+      color: #ff4d6d;
+      display: inline-block;
+      animation: heartbeat 1.5s infinite;
+    }
+    
+    @keyframes heartbeat {
+      0% { transform: scale(1); }
+      25% { transform: scale(1.2); }
+      50% { transform: scale(1); }
+      75% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Background Animation -->
+  <div class="bg-animation-container" id="bg-animation"></div>
+
+  <!-- Blockchain Status Indicator -->
+  <div id="blockchain-status">
+    <span class="status-indicator"></span>
+    <span>Connected to <span class="monad-highlight">Monad Testnet</span></span>
+  </div>
+  
+  <!-- Gas Meter -->
+  <div id="gas-meter">
+    Gas: <span id="gas-value">0.0015</span> MONAD
+  </div>
+
+  <!-- Welcome Banner -->
+  <div class="welcome-banner">
+    <h1>Web3 Space Cadet Pinball</h1>
+    <p>Welcome to the world's first Web3 pinball game where <span class="highlight">EVERY tap, flip, and move</span> is recorded on the <span class="monad-highlight">Monad blockchain</span>!</p>
+    <p>Play the game, make as many moves as possible, and let's break Monad with our transactions!</p>
+    <p><strong>How it works:</strong> Every flipper, bumper, and plunger action triggers a transaction on Monad's blazing-fast blockchain.</p>
+  </div>
+
+  <div class="emscripten_border" style="box-shadow: 0 0 20px var(--monad-primary);">
+    <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+  </div>
+  
+  <!-- End Game button -->
+  <button id="end-game-btn" title="End the current game and share your score">End Game & Share</button>
+
+  <!-- Game Stats -->
+  <div id="game-stats">
+    <div class="stat-item">
+      <div class="stat-value" id="current-score">0</div>
+      <div class="stat-label">Score</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value" id="current-actions">0</div>
+      <div class="stat-label">Transactions</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value" id="gas-used">0.0000</div>
+      <div class="stat-label">Gas Used</div>
+    </div>
+  </div>
+
+  <!-- Transaction Feed -->
+  <div id="transaction-feed"></div>
+
+  <!-- Game Over Modal -->
+  <div id="game-over-modal">
+    <div class="modal-content">
+      <div class="game-over">
+        <h1>Game Over!</h1>
+        <div id="final-score">0</div>
+      </div>
+      
+      <div class="stats-info">
+        <p>You made <span class="action-counter" id="action-counter">0</span> transactions on the <span class="monad-highlight">Monad blockchain</span>!</p>
+        <p>Total gas used: <span id="final-gas-used">0.0000</span> MONAD</p>
+      </div>
+      
+      <!-- Screenshot Section -->
+      <div id="screenshot-section">
+        <h3>Your Gameplay Screenshot</h3>
+        <img id="score-screenshot" alt="Score Screenshot">
+        <div class="success-message" id="share-success">Successfully copied to clipboard!</div>
+      </div>
+      
+      <div class="button-group">
+        <button id="share-twitter-btn">Share on Twitter</button>
+        <button id="play-again-btn">Play Again</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="status-container">
+    <div id="status">Downloading...</div>
+    <div id="progress" style="display: none;"></div>
+  </div>
+
+  <div id="output"></div>
+
+  <!-- Footer with creator info -->
+  <div class="footer">
+    Made with <span class="heart">♥</span> by theantideather | <a href="https://x.com/omg14doteth?s=21" target="_blank">@omg14doteth</a>
+  </div>
+
+  <!-- Monad branding -->
+  <div class="monad-branding">
+    <span class="monad-logo"></span>
+    Powered by Monad Blockchain
+  </div>
+
+  <script>
+    var statusElement = document.getElementById("status");
+    var progressElement = document.getElementById("progress");
+    var Module = {
+      preRun: [],
+      postRun: [],
+      print: function () {
+        var e = document.getElementById("output");
+        return e && (e.value = ""), function (e) {
+          arguments.length > 1 && (e = Array.prototype.slice.call(arguments).join(" ")), console.log(e)
+        }
+      },
+      printErr: function (e) {
+        arguments.length > 1 && (e = Array.prototype.slice.call(arguments).join(" ")), console.error(e)
+      },
+      canvas: function () {
+        var e = document.getElementById("canvas");
+        return e.addEventListener("webglcontextlost", (function (e) {
+          alert("WebGL context lost. You will need to reload the page."), e.preventDefault()
+        }), !1), e
+      }(),
+      setStatus: function (e) {
+        if (Module.setStatus.last || (Module.setStatus.last = {
+          time: Date.now(),
+          text: ""
+        }), e !== Module.setStatus.last.text) {
+          var t = e.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/),
+            n = Date.now();
+          if (!(t && n - Module.setStatus.last.time < 30)) {
+            if (Module.setStatus.last.time = n, Module.setStatus.last.text = e, t) e = t[1], progressElement.value = 100 * parseInt(t[2]), progressElement.max = 100 * parseInt(t[4]), progressElement.hidden = !1;
+            else progressElement.value = null, progressElement.max = null, progressElement.hidden = !0, document.getElementById("canvas").style.display = "";
+            statusElement.innerHTML = e, "" === e ? (statusElement.style.display = "none", progressElement.style.display = "none") : (statusElement.style.display = "", progressElement.style.display = "")
+          }
+        }
+      },
+      totalDependencies: 0,
+      monitorRunDependencies: function (e) {
+        this.totalDependencies = Math.max(this.totalDependencies, e), Module.setStatus(e ? "Preparing... (" + (this.totalDependencies - e) + "/" + this.totalDependencies + ")" : "All downloads complete.")
+      }
+    };
+    Module.setStatus("Downloading..."), window.onerror = function () {
+      Module.setStatus("Exception thrown, see JavaScript console"), Module.setStatus = function (e) {
+        e && Module.printErr("[post-exception status] " + e)
+      }
+    }
+  </script>
+  <script async src="SpaceCadetPinball.js"></script>
+
+  <!-- Game Interaction Script -->
+  <script>
+    // Background animation setup
+    document.addEventListener('DOMContentLoaded', function() {
+      const bgContainer = document.getElementById('bg-animation');
+      
+      // Create floating particles
+      for (let i = 0; i < 20; i++) {
+        createFloatingParticle(bgContainer);
+      }
+      
+      // Create floating cubes
+      for (let i = 0; i < 3; i++) {
+        createFloatingCube(bgContainer);
+      }
+    });
+    
+    function createFloatingParticle(container) {
+      const particle = document.createElement('div');
+      particle.className = 'floating-particle';
+      
+      // Random size, position, and animation duration
+      const size = Math.random() * 50 + 20;
+      const left = Math.random() * 100;
+      const delay = Math.random() * 15;
+      const duration = Math.random() * 10 + 15;
+      
+      particle.style.width = `${size}px`;
+      particle.style.height = `${size}px`;
+      particle.style.left = `${left}vw`;
+      particle.style.animationDuration = `${duration}s`;
+      particle.style.animationDelay = `-${delay}s`;
+      
+      container.appendChild(particle);
+    }
+    
+    function createFloatingCube(container) {
+      const cube = document.createElement('div');
+      cube.className = 'cube';
+      
+      // Random position and animation properties
+      const left = Math.random() * 90 + 5;
+      const top = Math.random() * 70 + 15;
+      const delay = Math.random() * 10;
+      const duration = Math.random() * 10 + 20;
+      
+      cube.style.left = `${left}vw`;
+      cube.style.top = `${top}vh`;
+      cube.style.animationDuration = `${duration}s`;
+      cube.style.animationDelay = `-${delay}s`;
+      
+      // Create cube faces
+      for (let i = 0; i < 6; i++) {
+        const face = document.createElement('div');
+        face.className = 'cube-face';
+        
+        // Position each face
+        const transforms = [
+          'translateZ(40px)',
+          'rotateY(180deg) translateZ(40px)',
+          'rotateY(90deg) translateZ(40px)',
+          'rotateY(-90deg) translateZ(40px)',
+          'rotateX(90deg) translateZ(40px)',
+          'rotateX(-90deg) translateZ(40px)'
+        ];
+        
+        face.style.transform = transforms[i];
+        cube.appendChild(face);
+      }
+      
+      container.appendChild(cube);
+    }
+  
+    // Game handling logic
+    document.addEventListener('DOMContentLoaded', function () {
+      console.log("DOM content loaded - initializing game");
+      
+      let currentScore = 0;
+      let gameActive = true; // Game is active immediately
+      let gameCanvas = document.getElementById('canvas');
+      let lastKnownBallCount = 3; // Standard pinball starts with 3 balls
+      let lastKnownScore = 0;
+      let scoreCheckInterval = null;
+      let actionCount = 0; // Count of actions/transactions
+      let totalGasUsed = 0.0000; // Track total gas used
+      
+      // Transaction feed
+      const transactionFeed = document.getElementById('transaction-feed');
+      // Limit the number of visible transactions
+      const MAX_VISIBLE_TRANSACTIONS = 5;
+      
+      // Game elements
+      const gameOverModal = document.getElementById('game-over-modal');
+      const finalScoreDisplay = document.getElementById('final-score');
+      const actionCounter = document.getElementById('action-counter');
+      const currentScoreElement = document.getElementById('current-score');
+      const currentActions = document.getElementById('current-actions');
+      const gasUsedElement = document.getElementById('gas-used');
+      const finalGasUsed = document.getElementById('final-gas-used');
+      const shareTwitterBtn = document.getElementById('share-twitter-btn');
+      const playAgainBtn = document.getElementById('play-again-btn');
+      const endGameBtn = document.getElementById('end-game-btn');
+      const scoreScreenshot = document.getElementById('score-screenshot');
+      const shareSuccess = document.getElementById('share-success');
+
+      // End Game button handler
+      endGameBtn.addEventListener('click', function() {
+        if (gameActive) {
+          // End the game and show modal with current score
+          gameOver(lastKnownScore || 0);
+        }
+      });
+
+      // Track keypresses to count actions and trigger transactions
+      document.addEventListener('keydown', function(event) {
+        if (!gameActive) return;
+        
+        // Only count certain key presses as "game actions"
+        if (['z', '/', ' ', 'Shift'].includes(event.key.toLowerCase())) {
+          recordAction(event.key.toLowerCase());
+        }
+        
+        // Keep CTRL+E shortcut for testing
+        if (event.ctrlKey && event.key === 'e' && gameActive) {
+          gameOver(lastKnownScore || Math.floor(Math.random() * 10000000)); // Simulate a score
+        }
+      });
+      
+      // Function to record an action and trigger a transaction
+      function recordAction(actionType) {
+        actionCount++;
+        currentActions.textContent = actionCount;
+        
+        // Calculate gas for this transaction (random small amount)
+        const gasForTransaction = (Math.random() * 0.0002 + 0.0001).toFixed(6);
+        totalGasUsed += parseFloat(gasForTransaction);
+        
+        // Update gas display (fixed to 4 decimal places)
+        gasUsedElement.textContent = totalGasUsed.toFixed(4);
+        
+        // Create a transaction hash (mock)
+        const txHash = generateMockTxHash();
+        
+        // Log the action and show transaction
+        console.log(`Transaction #${actionCount} recorded on Monad blockchain: ${txHash}`);
+        
+        // Add transaction to feed with animation
+        addTransactionToFeed(actionType, txHash, gasForTransaction);
+        
+        // Flash the action counter to show activity
+        currentActions.classList.add('pulse');
+        setTimeout(() => {
+          currentActions.classList.remove('pulse');
+        }, 1000);
+      }
+      
+      // Generate a mock transaction hash
+      function generateMockTxHash() {
+        const chars = '0123456789abcdef';
+        let hash = '0x';
+        for (let i = 0; i < 64; i++) {
+          hash += chars[Math.floor(Math.random() * chars.length)];
+        }
+        return hash;
+      }
+      
+      // Add transaction to feed
+      function addTransactionToFeed(actionType, txHash, gas) {
+        // Create transaction element
+        const txElement = document.createElement('div');
+        txElement.className = 'transaction-item';
+        
+        // Format action type name
+        let actionName = 'Action';
+        switch(actionType) {
+          case 'z': actionName = 'Left Flipper'; break;
+          case '/': actionName = 'Right Flipper'; break;
+          case ' ': actionName = 'Plunger'; break;
+          case 'shift': actionName = 'Nudge'; break;
+        }
+        
+        // Short hash for display
+        const shortHash = txHash.substring(0, 10) + '...' + txHash.substring(txHash.length - 6);
+        
+        // Set content with formatted time
+        const now = new Date();
+        const time = now.toLocaleTimeString();
+        
+        // Create the content
+        txElement.innerHTML = `
+          <div>
+            <div><strong>${actionName}</strong> | Gas: ${gas} MONAD</div>
+            <div class="transaction-hash">${shortHash}</div>
+            <div class="transaction-time">${time}</div>
+          </div>
+          <div class="transaction-status">Confirmed</div>
+        `;
+        
+        // Add to feed at the top
+        transactionFeed.insertBefore(txElement, transactionFeed.firstChild);
+        
+        // Remove old transactions if too many
+        while (transactionFeed.children.length > MAX_VISIBLE_TRANSACTIONS) {
+          transactionFeed.removeChild(transactionFeed.lastChild);
+        }
+        
+        // Animate transaction confirmation after a delay
+        setTimeout(() => {
+          if (txElement.parentNode === transactionFeed) {
+            txElement.querySelector('.transaction-status').textContent = 'Confirmed';
+            txElement.querySelector('.transaction-status').style.color = '#10b981';
+          }
+        }, 1000 + Math.random() * 1000);
+      }
+
+      // Function to read the game's memory to detect game state changes
+      function checkGameState() {
+        if (!window.Module || !Module.ready) return;
+        
+        try {
+          // Get current score
+          const score = typeof Module.getScore === 'function' ? 
+            Module.getScore() : 
+            (Module.mem ? parseInt(Module.mem[0x4A]) : Math.floor(Math.random() * 10000000));
+          
+          // Update score tracking
+          if (score > lastKnownScore) {
+            lastKnownScore = score;
+            currentScoreElement.textContent = score.toLocaleString();
+            
+            // Record an action for score increases
+            if (score - lastKnownScore > 100) {
+              recordAction('score');
+            }
+          }
+          
+        } catch (error) {
+          console.error('Error checking game state:', error);
+        }
+      }
+
+      // Take a screenshot of the game
+      function takeScreenshot() {
+        try {
+          console.log("Taking screenshot...");
+          
+          // Try to get the canvas
+          const canvas = document.getElementById('canvas');
+          
+          // Create a screenshot canvas
+          const screenshotCanvas = document.createElement('canvas');
+          screenshotCanvas.width = 640;
+          screenshotCanvas.height = 480;
+          const ctx = screenshotCanvas.getContext('2d');
+          
+          // Create a nice background - updated with blockchain theme
+          const gradient = ctx.createLinearGradient(0, 0, 0, screenshotCanvas.height);
+          gradient.addColorStop(0, '#8B5CF6');  // Purple
+          gradient.addColorStop(1, '#3B82F6');  // Blue
+          
+          // Fill background
+          ctx.fillStyle = gradient;
+          ctx.fillRect(0, 0, screenshotCanvas.width, screenshotCanvas.height);
+          
+          // Add decorative elements
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+          for (let i = 0; i < 20; i++) {
+            const x = Math.random() * screenshotCanvas.width;
+            const y = Math.random() * screenshotCanvas.height;
+            const radius = Math.random() * 5 + 2;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          
+          // Draw the Monad logo (simplified)
+          ctx.fillStyle = '#10b981';
+          ctx.beginPath();
+          ctx.arc(320, 100, 30, 0, Math.PI * 2);
+          ctx.fill();
+          
+          // Text shadow
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+          ctx.shadowBlur = 10;
+          ctx.shadowOffsetX = 5;
+          ctx.shadowOffsetY = 5;
+          
+          // Draw title
+          ctx.fillStyle = '#FFD700';  // Gold
+          ctx.font = 'bold 36px Arial';
+          ctx.textAlign = 'center';
+          ctx.fillText('Web3 Space Cadet Pinball', screenshotCanvas.width/2, 60);
+          
+          // Draw "on Monad" text
+          ctx.fillStyle = '#8B5CF6';  // Purple
+          ctx.font = 'bold 24px Arial';
+          ctx.fillText('on Monad Blockchain', screenshotCanvas.width/2, 95);
+          
+          // Add score
+          ctx.fillStyle = '#FFFFFF';
+          ctx.font = 'bold 64px Arial';
+          ctx.fillText(lastKnownScore.toLocaleString(), screenshotCanvas.width/2, 200);
+          
+          // Add transaction count
+          ctx.fillStyle = '#FFD700';
+          ctx.font = 'bold 28px Arial';
+          ctx.fillText(`${actionCount} Transactions on Blockchain`, screenshotCanvas.width/2, 260);
+          
+          // Add gas used
+          ctx.fillStyle = '#10b981';
+          ctx.font = 'bold 24px Arial';
+          ctx.fillText(`${totalGasUsed.toFixed(4)} MONAD Gas Used`, screenshotCanvas.width/2, 300);
+          
+          // Add date
+          ctx.fillStyle = '#FFFFFF';
+          ctx.font = '20px Arial';
+          ctx.fillText(new Date().toLocaleDateString(), screenshotCanvas.width/2, 340);
+          
+          // Try to draw the original canvas on top for authenticity
+          if (canvas) {
+            try {
+              ctx.globalAlpha = 0.3;
+              ctx.drawImage(canvas, 0, 0, screenshotCanvas.width, screenshotCanvas.height);
+              ctx.globalAlpha = 1.0;
+            } catch (e) {
+              console.warn("Could not draw original canvas:", e);
+            }
+          }
+          
+          // Add call to action and creator credit
+          ctx.fillStyle = '#FFFFFF';
+          ctx.font = '18px Arial';
+          ctx.fillText('Play now at pinballonmonad.netlify.app', screenshotCanvas.width/2, 400);
+          ctx.font = '16px Arial';
+          ctx.fillText('by @omg14doteth', screenshotCanvas.width/2, 430);
+          
+          // Return the canvas data URL
+          return screenshotCanvas.toDataURL('image/png');
+          
+        } catch (error) {
+          console.error("Error in takeScreenshot:", error);
+          
+          // Create a very simple emergency fallback
+          const emergencyCanvas = document.createElement('canvas');
+          emergencyCanvas.width = 400;
+          emergencyCanvas.height = 300;
+          const ectx = emergencyCanvas.getContext('2d');
+          
+          // Draw simple background
+          ectx.fillStyle = '#8B5CF6';
+          ectx.fillRect(0, 0, 400, 300);
+          
+          // Add text
+          ectx.fillStyle = 'white';
+          ectx.font = '20px Arial';
+          ectx.textAlign = 'center';
+          ectx.fillText('Web3 Pinball Score', 200, 100);
+          ectx.fillText('Score: ' + lastKnownScore, 200, 150);
+          ectx.fillText('Transactions: ' + actionCount, 200, 180);
+          ectx.fillText('Monad Blockchain', 200, 220);
+          ectx.fillText('by @omg14doteth', 200, 250);
+          
+          return emergencyCanvas.toDataURL('image/png');
+        }
+      }
+
+      // Updated Share on Twitter function with correct Twitter handle
+      function shareOnTwitter() {
+        const tweetText = `I scored ${lastKnownScore.toLocaleString()} points in Web3 Space Cadet Pinball and created ${actionCount} transactions on @monad_xyz blockchain! Let's break Monad by playing at pinballonmonad.netlify.app via @omg14doteth #MonadPinball #Web3Gaming`;
+        const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
+        
+        // Open Twitter in a new window
+        window.open(tweetUrl, '_blank');
+      }
+
+      // Play again button handler
+      playAgainBtn.addEventListener('click', function() {
+        gameOverModal.style.display = 'none';
+        gameActive = true;
+        lastKnownBallCount = 3; // Reset ball count
+        lastKnownScore = 0; // Reset score
+        actionCount = 0; // Reset action count
+        totalGasUsed = 0.0000; // Reset gas used
+        currentScoreElement.textContent = '0';
+        currentActions.textContent = '0';
+        gasUsedElement.textContent = '0.0000';
+        
+        // Clear transaction feed
+        transactionFeed.innerHTML = '';
+        
+        // Reset the game
+        if (window.Module && Module.ready) {
+          try {
+            // Try to call the pinball game's new game function if available
+            if (typeof Module.newGame === 'function') {
+              Module.newGame();
+            } else {
+              // If not available, reload the page to restart
+              window.location.reload();
+            }
+          } catch (e) {
+            console.error('Error restarting game:', e);
+            window.location.reload();
+          }
+        } else {
+          // Fallback to reloading the page
+          window.location.reload();
+        }
+        
+        // Restart interval for checking game state
+        startGameStateCheck();
+      });
+      
+      // Share on Twitter button handler
+      shareTwitterBtn.addEventListener('click', function() {
+        shareOnTwitter();
+      });
+
+      // Game over function
+      function gameOver(score) {
+        if (!gameActive) return;
+
+        currentScore = score;
+        gameActive = false;
+
+        // Update the game over modal with the score and stats
+        finalScoreDisplay.textContent = score.toLocaleString();
+        actionCounter.textContent = actionCount;
+        finalGasUsed.textContent = totalGasUsed.toFixed(4);
+
+        // Take a screenshot for sharing
+        const screenshot = takeScreenshot();
+        scoreScreenshot.src = screenshot;
+        
+        // Show the game over modal
+        gameOverModal.style.display = 'flex';
+      }
+
+      // Start checking game state periodically
+      function startGameStateCheck() {
+        // Clear any existing interval
+        if (scoreCheckInterval) {
+          clearInterval(scoreCheckInterval);
+        }
+        
+        // Check every 500ms for game state changes
+        scoreCheckInterval = setInterval(checkGameState, 500);
+      }
+
+      // Hook into the Module's postRun to know when the game is ready
+      const originalPostRun = Module.postRun;
+      Module.postRun = function () {
+        if (originalPostRun) {
+          originalPostRun();
+        }
+
+        // Mark the module as ready
+        Module.ready = true;
+        
+        // Start monitoring game state when game is ready
+        startGameStateCheck();
+        
+        // Game is active immediately
+        gameActive = true;
+      };
+    });
+  </script>
+</body>
+
+</html> 

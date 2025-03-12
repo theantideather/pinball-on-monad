@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Input Debug Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        input {
+            padding: 10px;
+            margin: 10px 0;
+            width: 300px;
+            display: block;
+        }
+        button {
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #status {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Input Test Page</h1>
+    <p>This page tests if input fields are working properly:</p>
+    
+    <input type="text" id="test-input" placeholder="Type something here...">
+    <button id="test-button">Test Button</button>
+    
+    <div id="status">Status: Waiting for input...</div>
+    
+    <script>
+        // Simple script to test input functionality
+        document.getElementById('test-input').addEventListener('input', function(e) {
+            document.getElementById('status').innerText = 'Status: Input detected: ' + e.target.value;
+        });
+        
+        document.getElementById('test-button').addEventListener('click', function() {
+            const inputValue = document.getElementById('test-input').value;
+            alert('Button clicked! Input value: ' + (inputValue || 'empty'));
+        });
+    </script>
+</body>
+</html> 

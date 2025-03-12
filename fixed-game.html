@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8">
+  <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+  <title>Web3 Pin Box - Space Cadet Pinball</title>
+  <style>
+    :root {
+      --ActiveBorder: rgb(212, 208, 200);
+      --ActiveTitle: rgb(106, 10, 99);
+      --AppWorkspace: rgb(128, 128, 128);
+      --Background: linear-gradient(135deg, #8a2387, #e94057, #f27121);
+      --ButtonAlternateFace: rgb(192, 192, 192);
+      --ButtonDkShadow: rgb(64, 64, 64);
+      --ButtonFace: rgb(212, 208, 200);
+      --ButtonHilight: rgb(255, 255, 255);
+      --ButtonLight: rgb(212, 208, 200);
+      --ButtonShadow: rgb(128, 128, 128);
+      --ButtonText: rgb(0, 0, 0);
+      --GradientActiveTitle: rgb(240, 166, 230);
+      --GradientInactiveTitle: rgb(192, 192, 192);
+      --GrayText: rgb(128, 128, 128);
+      --Hilight: rgb(106, 10, 99);
+      --HilightText: rgb(255, 255, 255);
+      --HotTrackingColor: rgb(128, 0, 128);
+      --InactiveBorder: rgb(212, 208, 200);
+      --InactiveTitle: rgb(128, 128, 128);
+      --InactiveTitleText: rgb(212, 208, 200);
+      --InfoText: rgb(0, 0, 0);
+      --InfoWindow: rgb(255, 255, 225);
+      --Menu: rgb(212, 208, 200);
+      --MenuBar: rgb(192, 192, 192);
+      --MenuHilight: rgb(128, 0, 128);
+      --MenuText: rgb(0, 0, 0);
+      --Scrollbar: rgb(212, 208, 200);
+      --TitleText: rgb(255, 255, 255);
+      --Window: rgb(255, 255, 255);
+      --WindowFrame: rgb(0, 0, 0);
+      --WindowText: rgb(0, 0, 0)
+    }
+
+    body {
+      font-family: Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--Background);
+      text-align: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box
+    }
+
+    textarea.emscripten {
+      font-family: monospace;
+      width: 80%
+    }
+
+    canvas.emscripten {
+      border: 0 none;
+      background-color: #000
+    }
+
+    .titlebar {
+      text-align: start;
+      margin: 0;
+      padding: 1px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      user-select: none
+    }
+
+    .titlebar .titlebar-icon {
+      width: 16px;
+      height: 16px;
+      padding: 1px
+    }
+
+    .titlebar .titlebar-title {
+      display: flex;
+      padding: 0 2px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      flex-grow: 1;
+      font-weight: 700;
+      align-items: center
+    }
+
+    .titlebar .titlebar-wincontrols {
+      display: inline-block;
+      margin: 0;
+      padding: 1px;
+      min-width: fit-content
+    }
+
+    .titlebar-wincontrols .buttons-wrapper {
+      display: inline-block;
+      width: auto;
+      margin: 0;
+      padding: 1px
+    }
+
+    .titlebar-wincontrols .spacer {
+      display: inline-block;
+      margin: 0;
+      padding: 0;
+      width: 2px
+    }
+
+    .titlebar-wincontrols .button {
+      display: inline-block;
+      min-width: 12px;
+      min-height: 10px;
+      width: 12px;
+      height: 10px;
+      text-align: center;
+      vertical-align: middle;
+      line-height: 10px
+    }
+
+    .window {
+      font-size: 8pt;
+      color: var(--WindowText);
+      background-color: var(--ButtonFace);
+      border: 1px solid var(--ActiveBorder);
+      box-shadow: -.5px -.5px 0 .5px var(--ButtonHilight), 0 0 0 1px var(--ButtonShadow), -.5px -.5px 0 1.5px var(--ButtonLight), 0 0 0 2px var(--ButtonDkShadow);
+      padding-right: 0;
+      margin-left: auto;
+      margin-right: auto;
+      display: inline-block
+    }
+
+    .window.active {
+      border: 1px solid var(--ActiveBorder)
+    }
+
+    .window.active .titlebar .titlebar-icon {
+      background-color: var(--ActiveTitle);
+      color: var(--TitleText)
+    }
+
+    .window.active .titlebar .titlebar-title {
+      background-color: var(--ActiveTitle);
+      background-image: linear-gradient(to right, var(--ActiveTitle), var(--GradientActiveTitle));
+      color: var(--TitleText)
+    }
+
+    .window.active .titlebar .titlebar-wincontrols,
+    .window.active .titlebar .titlebar-wincontrols .buttons-wrapper {
+      background-color: var(--GradientActiveTitle);
+      font-size: 8pt;
+      font-weight: 700
+    }
+
+    .button {
+      margin: 2px
+    }
+
+    .button span.button-content {
+      display: inline-block
+    }
+
+    .button:active .button-content {
+      transform: translate(1px, 1px)
+    }
+
+    .button {
+      background-color: var(--ButtonFace);
+      color: var(--ButtonText);
+      box-shadow: -.5px -.5px 0 .5px var(--ButtonLight), 0 0 0 1px var(--ButtonShadow), -.5px -.5px 0 1.5px var(--ButtonHilight), 0 0 0 2px var(--ButtonDkShadow)
+    }
+
+    .button:active {
+      box-shadow: -.5px -.5px 0 .5px var(--ButtonShadow), 0 0 0 1px var(--ButtonShadow), -.5px -.5px 0 1.5px var(--WindowFrame), 0 0 0 2px var(--WindowFrame)
+    }
+
+    .button svg path {
+      fill: var(--ButtonText)
+    }
+
+    .titlebar .button:active {
+      box-shadow: -.5px -.5px 0 .5px var(--ButtonShadow), 0 0 0 1px var(--ButtonLight), -.5px -.5px 0 1.5px var(--ButtonDkShadow), 0 0 0 2px var(--ButtonHilight)
+    }
+
+    #status {
+      margin: 40px 32px
+    }
+
+    .branding {
+      font-size: 24px;
+      color: white;
+      font-weight: bold;
+      margin: 20px 0;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    .controls-container {
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 15px;
+      margin: 20px auto;
+      max-width: 500px;
+      border-radius: 10px;
+      text-align: left;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .controls-title {
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 16px;
+      color: #f8c291;
+    }
+
+    .control-item {
+      margin: 5px 0;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .key {
+      background-color: rgba(255, 255, 255, 0.2);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+
+    /* Username modal styling */
+    #username-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .username-modal {
+      background: linear-gradient(135deg, #391070, #8c1b7a);
+      color: white;
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      text-align: center;
+    }
+
+    .username-modal h2 {
+      margin-top: 0;
+      font-size: 24px;
+      color: #f8c291;
+    }
+
+    .username-modal p {
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .username-input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+      background: rgba(255, 255, 255, 0.9);
+      box-sizing: border-box;
+    }
+
+    .start-button {
+      padding: 12px 24px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s ease;
+    }
+
+    .start-button:hover {
+      background: #45a049;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Connect wallet button */
+    .connect-wallet-btn {
+      padding: 8px 16px;
+      background: #ff9800;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s ease;
+      margin-top: 10px;
+    }
+
+    .connect-wallet-btn:hover {
+      background: #f57c00;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    /* NFT Mint Modal */
+    #nft-mint-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .nft-content {
+      background: linear-gradient(135deg, #391070, #8c1b7a);
+      color: white;
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      text-align: center;
+    }
+
+    .nft-content h2 {
+      margin-top: 0;
+      color: #f8c291;
+    }
+
+    .score-display {
+      font-size: 32px;
+      margin: 15px 0;
+      color: #ffeb3b;
+    }
+
+    .mint-button {
+      padding: 12px 24px;
+      background: #ff5722;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s ease;
+      margin-top: 15px;
+    }
+
+    .mint-button:hover {
+      background: #e64a19;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    /* NFT section below the game */
+    .nft-info {
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 15px;
+      margin: 20px auto;
+      max-width: 500px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .nft-info-title {
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 16px;
+      color: #f8c291;
+    }
+
+    .wallet-info {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 10px;
+      border-radius: 8px;
+      margin: 10px 0;
+      font-family: monospace;
+      word-break: break-all;
+    }
+
+    #nft-status {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      margin-right: 10px;
+      border: 3px solid rgba(255, 255, 255, .3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Username Entry Overlay -->
+  <div id="username-overlay">
+    <div class="username-modal">
+      <h2>Welcome to Web3 Pin Box</h2>
+      <p>Enter your username to start playing. Your high score will be minted as an NFT on the Monad blockchain!</p>
+      <input type="text" id="username-input" class="username-input" placeholder="Enter your gaming username">
+      <button id="connect-wallet-btn" class="connect-wallet-btn">Connect Wallet</button>
+      <p id="wallet-status">Wallet not connected</p>
+      <button id="start-game-btn" class="start-button">Start Game</button>
+    </div>
+  </div>
+
+  <!-- NFT Mint Modal (hidden initially) -->
+  <div id="nft-mint-modal">
+    <div class="nft-content">
+      <h2>Congratulations!</h2>
+      <p>Your final score is:</p>
+      <div class="score-display" id="final-score">0</div>
+      <p>Would you like to mint this score as an NFT?</p>
+      <button id="mint-nft-btn" class="mint-button">Mint as NFT</button>
+    </div>
+  </div>
+
+  <div class="branding">Web3 Pin Box</div>
+  <div class="active window">
+    <div class=titlebar><span class=titlebar-title>Space Cadet Pinball</span>
+      <div class=titlebar-wincontrols>
+        <ul class=buttons-wrapper>
+          <li class="button minimize"><svg class="button-content replaced-svg" height=0.104181in width=0.125017in
+              xmlns=http://www.w3.org/2000/svg viewBox="0 0 12 10">
+              <path d="M 2.00,7.00            C 2.00,7.00 8.00,7.00 8.00,7.00              8.00,7.00 8.00,9.00 8.00,9.00              8.00,9.00 2.00,9.00 2.00,9.00              2.00,9.00 2.00,7.00 2.00,7.00 Z"
+                fill=black id=Minimize stroke-width=0 stroke=black></path>
+            </svg></li>
+          <li class="button maximize"><svg class="button-content replaced-svg" height=0.104181in width=0.125017in
+              xmlns=http://www.w3.org/2000/svg viewBox="0 0 12 10">
+              <path d="M 2.00,2.00            C 2.00,2.00 9.00,2.00 9.00,2.00              9.00,2.00 9.00,8.00 9.00,8.00              9.00,8.00 2.00,8.00 2.00,8.00              2.00,8.00 2.00,2.00 2.00,2.00 Z            M 1.00,0.00            C 1.00,0.00 1.00,9.00 1.00,9.00              1.00,9.00 10.00,9.00 10.00,9.00              10.00,9.00 10.00,0.00 10.00,0.00              10.00,0.00 1.00,0.00 1.00,0.00 Z"
+                fill=black id=Maximize stroke-width=0 stroke=black></path>
+            </svg></li>
+          <li class=spacer></li>
+          <li class="button close"><svg class="button-content replaced-svg" height=10 width=12
+              xmlns=http://www.w3.org/2000/svg version=1.1 xmlns:svg=http://www.w3.org/2000/svg>
+              <g id=layer1 transform=translate(0,-1042.3622)>
+                <path d="m 2.0025485,1043.3853 2.0198115,0 0,1.0185 0.984011,0 0,0.984 1.985286,0 0,-0.984 1.001274,0 0,-1.0185 2.002548,0 0,1.0013 0,0 0,0 -1.001274,0 0,1.0012 -1.001274,0 0,0.9841 -1.001274,0 0,1.0012 1.001274,0 0,1.0013 1.001274,0 0,1.0013 1.001274,0 0,1.0013 -2.002548,0 0,-1.0013 -1.001274,0 0,-0.984 -1.985286,0 0,0.984 -1.001274,0 0,1.0013 -2.0025485,0 0,-1.0013 1.0012745,0 0,-1.0013 1.001274,0 0,-1.0013 1.001274,0 0,-1.0012 -1.001274,0 0,-0.9841 -1.001274,0 0,-1.0012 -1.0012745,0 0,-1.0186 z"
+                  fill=black id=Close stroke-width=0></path>
+              </g>
+            </svg></li>
+        </ul>
+      </div>
+    </div>
+    <div class=emscripten id=status>Downloading...</div>
+    <div class=emscripten><progress hidden id=progress max=100 value=0></progress></div>
+    <canvas class=emscripten id=canvas oncontextmenu=event.preventDefault() style=display:none tabindex=-1></canvas>
+  </div>
+
+  <div class="controls-container">
+    <div class="controls-title">GAME CONTROLS</div>
+    <div class="control-item"><span class="key">Z</span> <span>Left Flipper</span></div>
+    <div class="control-item"><span class="key">/</span> <span>Right Flipper</span></div>
+    <div class="control-item"><span class="key">Space</span> <span>Plunger / Launch Ball</span></div>
+    <div class="control-item"><span class="key">Shift</span> <span>Nudge</span></div>
+    <div class="control-item"><span class="key">F2</span> <span>New Game</span></div>
+    <div class="control-item"><span class="key">F3</span> <span>Pause Game</span></div>
+    <div class="control-item"><span class="key">F4</span> <span>Options</span></div>
+    <div class="control-item"><span class="key">F5</span> <span>High Scores</span></div>
+    <div class="control-item"><span class="key">F8</span> <span>Sound Options</span></div>
+    <div class="control-item"><span class="key">F12</span> <span>Take Screenshot</span></div>
+    <div class="control-item"><span class="key">CTRL+E</span> <span>End Game (Demo)</span></div>
+  </div>
+
+  <!-- NFT Information Section -->
+  <div class="nft-info">
+    <div class="nft-info-title">NFT MINTING STATUS</div>
+    <div id="current-user">Not logged in</div>
+    <div id="wallet-address"></div>
+    <div id="nft-status">Enter username to start playing</div>
+  </div>
+
+  <!-- Load Web3 Connector before main scripts -->
+  <script src="web3-connector.js"></script>
+
+  <script>
+    var statusElement = document.getElementById("status");
+    var progressElement = document.getElementById("progress");
+    var Module = {
+      preRun: [],
+      postRun: [],
+      print: function () {
+        var e = document.getElementById("output");
+        return e && (e.value = ""), function (e) {
+          arguments.length > 1 && (e = Array.prototype.slice.call(arguments).join(" ")), console.log(e)
+        }
+      }(),
+      printErr: function (e) {
+        arguments.length > 1 && (e = Array.prototype.slice.call(arguments).join(" ")), console.error(e)
+      },
+      canvas: function () {
+        var e = document.getElementById("canvas");
+        return e.addEventListener("webglcontextlost", (function (e) {
+          alert("WebGL context lost. You will need to reload the page."), e.preventDefault()
+        }), !1), e
+      }(),
+      setStatus: function (e) {
+        if (Module.setStatus.last || (Module.setStatus.last = {
+          time: Date.now(),
+          text: ""
+        }), e !== Module.setStatus.last.text) {
+          var t = e.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/),
+            n = Date.now();
+          if (!(t && n - Module.setStatus.last.time < 30)) {
+            if (Module.setStatus.last.time = n, Module.setStatus.last.text = e, t) e = t[1], progressElement.value = 100 * parseInt(t[2]), progressElement.max = 100 * parseInt(t[4]), progressElement.hidden = !1;
+            else progressElement.value = null, progressElement.max = null, progressElement.hidden = !0, document.getElementById("canvas").style.display = "";
+            statusElement.innerHTML = e, "" === e ? (statusElement.style.display = "none", progressElement.style.display = "none") : (statusElement.style.display = "", progressElement.style.display = "")
+          }
+        }
+      },
+      totalDependencies: 0,
+      monitorRunDependencies: function (e) {
+        this.totalDependencies = Math.max(this.totalDependencies, e), Module.setStatus(e ? "Preparing... (" + (this.totalDependencies - e) + "/" + this.totalDependencies + ")" : "All downloads complete.")
+      }
+    };
+    Module.setStatus("Downloading..."), window.onerror = function () {
+      Module.setStatus("Exception thrown, see JavaScript console"), Module.setStatus = function (e) {
+        e && Module.printErr("[post-exception status] " + e)
+      }
+    }
+  </script>
+  <script async src="SpaceCadetPinball.js"></script>
+
+  <!-- NFT Handling Script -->
+  <script>
+    // Game and NFT handling logic
+    document.addEventListener('DOMContentLoaded', function () {
+      console.log("DOM content loaded - initializing game");
+      
+      // Initialize Web3 connector
+      const web3Connector = new Web3Connector();
+
+      let currentUser = '';
+      let currentScore = 0;
+      let gameActive = false;
+      let gameCanvas = document.getElementById('canvas');
+
+      // Username handling
+      const usernameOverlay = document.getElementById('username-overlay');
+      const usernameInput = document.getElementById('username-input');
+      const startGameBtn = document.getElementById('start-game-btn');
+      const connectWalletBtn = document.getElementById('connect-wallet-btn');
+      const walletStatus = document.getElementById('wallet-status');
+      const currentUserDisplay = document.getElementById('current-user');
+      const walletAddressDisplay = document.getElementById('wallet-address');
+      const nftStatus = document.getElementById('nft-status');
+
+      // NFT mint modal
+      const nftMintModal = document.getElementById('nft-mint-modal');
+      const finalScoreDisplay = document.getElementById('final-score');
+      const mintNftBtn = document.getElementById('mint-nft-btn');
+      
+      // Check all DOM elements are found properly
+      console.log("Username input element:", usernameInput);
+      
+      // Focus on the username input when the page loads
+      if (usernameInput) {
+        setTimeout(() => {
+          usernameInput.focus();
+        }, 500);
+      }
+
+      // Connect wallet button handler
+      connectWalletBtn.addEventListener('click', async function () {
+        try {
+          walletStatus.textContent = "Connecting...";
+          const address = await web3Connector.connectWallet();
+          walletStatus.textContent = `Wallet connected: ${address.substring(0, 6)}...${address.substring(38)}`;
+          walletAddressDisplay.textContent = `Wallet: ${address.substring(0, 6)}...${address.substring(38)}`;
+          connectWalletBtn.textContent = "Wallet Connected";
+          connectWalletBtn.disabled = true;
+        } catch (error) {
+          console.error('Error connecting wallet:', error);
+          walletStatus.textContent = "Failed to connect wallet";
+        }
+      });
+
+      // Start game button click handler
+      startGameBtn.addEventListener('click', function () {
+        const username = usernameInput.value.trim();
+        if (username) {
+          currentUser = username;
+          currentUserDisplay.textContent = `Player: ${username}`;
+          nftStatus.textContent = "Game in progress...";
+          usernameOverlay.classList.add('hidden');
+          gameActive = true;
+
+          // Let the game know the username (could be used for high scores)
+          if (window.Module && Module.ready) {
+            Module.username = username;
+          }
+
+          // Connect wallet if not already connected
+          if (!web3Connector.isWalletConnected()) {
+            web3Connector.connectWallet().then(address => {
+              walletAddressDisplay.textContent = `Wallet: ${address.substring(0, 6)}...${address.substring(38)}`;
+            });
+          }
+        } else {
+          alert('Please enter a username to continue');
+        }
+      });
+
+      // Listen for game over event
+      // For demo purposes, we'll create a simple key combination (CTRL+E) to simulate game end
+      document.addEventListener('keydown', function (e) {
+        if (e.ctrlKey && e.key === 'e' && gameActive) {
+          gameOver(Math.floor(Math.random() * 10000000)); // Simulate a score
+        }
+      });
+
+      // Game over function
+      function gameOver(score) {
+        if (!gameActive) return;
+
+        currentScore = score;
+        gameActive = false;
+
+        // Update the NFT mint modal with the score
+        finalScoreDisplay.textContent = score.toLocaleString();
+
+        // Show the NFT mint modal
+        nftMintModal.style.display = 'flex';
+
+        // For demo: Update the NFT status
+        nftStatus.textContent = `Game over! Score: ${score.toLocaleString()}`;
+      }
+
+      // Mint NFT button click handler
+      mintNftBtn.addEventListener('click', async function () {
+        // Hide the mint modal
+        nftMintModal.style.display = 'none';
+
+        // Update status
+        nftStatus.innerHTML = '<div class="loading-spinner"></div> Minting NFT...';
+
+        // Take screenshot of the game canvas
+        const screenshot = takeScreenshot();
+
+        try {
+          // Mint NFT using the Web3 connector
+          const result = await web3Connector.mintNFT(currentUser, currentScore, screenshot);
+
+          if (result.success) {
+            nftStatus.innerHTML = `
+          <span style="color: #4CAF50;">✓ NFT Minted Successfully!</span><br>
+          <small>TxHash: ${result.transactionHash.substring(0, 16)}...${result.transactionHash.substring(60)}</small>
+        `;
+          } else {
+            nftStatus.innerHTML = `
+          <span style="color: #F44336;">✗ NFT Minting Failed</span><br>
+          <small>${result.error || 'Please try again later'}</small>
+        `;
+          }
+        } catch (error) {
+          console.error('Error minting NFT:', error);
+          nftStatus.innerHTML = `
+        <span style="color: #F44336;">✗ NFT Minting Failed</span><br>
+        <small>${error.message || 'Please try again later'}</small>
+      `;
+        }
+      });
+
+      // Take screenshot function
+      function takeScreenshot() {
+        try {
+          return gameCanvas.toDataURL('image/png');
+        } catch (e) {
+          console.error('Failed to take screenshot:', e);
+          return null;
+        }
+      }
+
+      // Hook into the Module's postRun to know when the game is ready
+      const originalPostRun = Module.postRun;
+      Module.postRun = function () {
+        if (originalPostRun) {
+          originalPostRun();
+        }
+
+        // Mark the module as ready
+        Module.ready = true;
+
+        // If user has already entered a username, update the module
+        if (currentUser) {
+          Module.username = currentUser;
+        }
+      };
+    });
+  </script>
+</body>
+
+</html> 

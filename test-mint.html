@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFT Mint Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #8a2387, #e94057, #f27121);
+            color: white;
+        }
+        .container {
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        #log {
+            background-color: #000;
+            color: #0f0;
+            font-family: monospace;
+            height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        #nft-preview-img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success {
+            background-color: rgba(76, 175, 80, 0.3);
+        }
+        .error {
+            background-color: rgba(244, 67, 54, 0.3);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>NFT Mint Testing Tool</h1>
+        <p>This page tests the NFT minting functionality to diagnose issues.</p>
+        
+        <div>
+            <h2>Step 1: Connect Wallet</h2>
+            <button id="connect-wallet">Connect MetaMask</button>
+            <div id="wallet-status" class="status">Not connected</div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <h2>Step 2: Generate Test Image</h2>
+        <button id="generate-image">Generate Test Image</button>
+        <div>
+            <img id="nft-preview-img" alt="NFT Preview" style="display: none;">
+        </div>
+    </div>
+    
+    <div class="container">
+        <h2>Step 3: Mint NFT</h2>
+        <div>
+            <label for="score">Test Score:</label>
+            <input type="number" id="score" value="12345">
+        </div>
+        <button id="mint-nft" disabled>Mint NFT</button>
+        <div id="mint-status" class="status">Not minted</div>
+    </div>
+    
+    <div class="container">
+        <h2>Minting Result</h2>
+        <div id="mint-result">
+            <table id="result-table" style="display:none;">
+                <tr>
+                    <th>Property</th>
+                    <th>Value</th>
+                </tr>
+                <tbody id="result-body">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="container">
+        <h2>Debug Log</h2>
+        <div id="log"></div>
+        <button id="clear-log">Clear Log</button>
+    </div>
+    
+    <!-- Load Web3 Connector before main scripts -->
+    <script src="web3-connector.js"></script>
+    
+    <script>
+        // Helper function to log to the debug console
+        function log(message, type = 'info') {
+            const logElement = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const formattedMessage = `[${timestamp}] [${type.toUpperCase()}] ${message}`;
+            console.log(formattedMessage);
+            
+            const logLine = document.createElement('div');
+            logLine.textContent = formattedMessage;
+            
+            if (type === 'error') {
+                logLine.style.color = '#f44336';
+            } else if (type === 'success') {
+                logLine.style.color = '#4CAF50';
+            }
+            
+            logElement.appendChild(logLine);
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        // Function to generate a test image
+        function generateTestImage() {
+            log('Generating test image...');
+            const canvas = document.createElement('canvas');
+            canvas.width = 640;
+            canvas.height = 480;
+            const ctx = canvas.getContext('2d');
+            
+            // Create a nice background
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#4b0082');  // Indigo
+            gradient.addColorStop(1, '#800080');  // Purple
+            
+            // Fill background
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Add decorative elements
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            for (let i = 0; i < 20; i++) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                const radius = Math.random() * 5 + 2;
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Draw text with score
+            ctx.fillStyle = '#FFD700';  // Gold
+            ctx.font = 'bold 48px Arial';
+            ctx.textAlign = 'center';
+            
+            const score = document.getElementById('score').value || '12345';
+            
+            // Add game title
+            ctx.fillText('Space Cadet Pinball', canvas.width/2, 100);
+            
+            // Add score
+            ctx.font = 'bold 64px Arial';
+            ctx.fillText(score, canvas.width/2, 240);
+            
+            // Add date
+            ctx.font = '24px Arial';
+            ctx.fillText(new Date().toLocaleDateString(), canvas.width/2, 300);
+            
+            // If wallet is connected, add address
+            if (window.web3Connector && window.web3Connector.address) {
+                ctx.font = '20px Arial';
+                ctx.fillText('Player: ' + window.web3Connector.getShortenedAddress(), canvas.width/2, 350);
+            }
+            
+            const imageUrl = canvas.toDataURL('image/png');
+            
+            // Display the image
+            const previewImg = document.getElementById('nft-preview-img');
+            previewImg.src = imageUrl;
+            previewImg.style.display = 'block';
+            
+            log('Test image generated successfully', 'success');
+            return imageUrl;
+        }
+
+        // Function to display minting result
+        function displayResult(result) {
+            log('Displaying minting result');
+            
+            const resultTable = document.getElementById('result-table');
+            const resultBody = document.getElementById('result-body');
+            
+            // Clear previous results
+            resultBody.innerHTML = '';
+            
+            // Populate the table with result properties
+            for (const [key, value] of Object.entries(result)) {
+                const row = document.createElement('tr');
+                
+                const keyCell = document.createElement('td');
+                keyCell.textContent = key;
+                
+                const valueCell = document.createElement('td');
+                if (typeof value === 'object' && value !== null) {
+                    valueCell.textContent = JSON.stringify(value);
+                } else {
+                    valueCell.textContent = value;
+                }
+                
+                row.appendChild(keyCell);
+                row.appendChild(valueCell);
+                resultBody.appendChild(row);
+            }
+            
+            resultTable.style.display = 'table';
+        }
+
+        // Initialize web3
+        async function initWeb3() {
+            try {
+                log('Initializing Web3 connector...');
+                
+                // Check if web3Connector is loaded
+                if (!window.web3Connector) {
+                    throw new Error('Web3 connector not loaded');
+                }
+                
+                // Initialize the connector
+                await window.web3Connector.initialize();
+                log('Web3 connector initialized', 'success');
+                
+                // Check if it's connected already
+                if (web3Connector.isConnected) {
+                    updateWalletStatus(true);
+                }
+                
+                log('Web3 connector setup complete', 'success');
+            } catch (error) {
+                log(`Error initializing Web3: ${error.message}`, 'error');
+            }
+        }
+
+        // Update wallet connection status
+        function updateWalletStatus(isConnected) {
+            const walletStatus = document.getElementById('wallet-status');
+            const mintButton = document.getElementById('mint-nft');
+            
+            if (isConnected) {
+                walletStatus.textContent = `Connected: ${web3Connector.getShortenedAddress()}`;
+                walletStatus.className = 'status success';
+                mintButton.disabled = false;
+                log(`Wallet connected: ${web3Connector.address}`, 'success');
+            } else {
+                walletStatus.textContent = 'Not connected';
+                walletStatus.className = 'status error';
+                mintButton.disabled = true;
+                log('Wallet not connected', 'error');
+            }
+        }
+
+        // Mint NFT function
+        async function mintNFT() {
+            try {
+                log('Starting NFT minting process...');
+                
+                const mintStatus = document.getElementById('mint-status');
+                mintStatus.textContent = 'Minting in progress...';
+                mintStatus.className = 'status';
+                
+                // Check wallet connection
+                if (!window.web3Connector || !window.web3Connector.isConnected) {
+                    throw new Error('Wallet not connected');
+                }
+                
+                // Get the score and image
+                const score = document.getElementById('score').value || '12345';
+                const previewImg = document.getElementById('nft-preview-img');
+                
+                // If no image is generated yet, generate one
+                let imageData;
+                if (previewImg.style.display === 'none') {
+                    log('No image generated, generating now...');
+                    imageData = generateTestImage();
+                } else {
+                    imageData = previewImg.src;
+                }
+                
+                // Call the mint function
+                log(`Minting NFT with score: ${score}`);
+                log(`Sending request to: ${window.web3Connector.apiEndpoint}`);
+                
+                const mintButton = document.getElementById('mint-nft');
+                mintButton.disabled = true;
+                
+                const result = await window.web3Connector.mintNFT(score, imageData);
+                
+                log('Mint request completed', 'success');
+                log(`Result: ${JSON.stringify(result)}`);
+                
+                // Update status based on result
+                if (result.success) {
+                    mintStatus.textContent = 'NFT minted successfully!';
+                    mintStatus.className = 'status success';
+                    log('NFT minted successfully!', 'success');
+                    
+                    // Display transaction details
+                    log(`Transaction Hash: ${result.transactionHash}`, 'success');
+                    log(`Token ID: ${result.tokenId}`, 'success');
+                    if (result.isSimulated) {
+                        log('NOTE: This was a simulated transaction', 'info');
+                    }
+                } else {
+                    mintStatus.textContent = `Minting failed: ${result.error}`;
+                    mintStatus.className = 'status error';
+                    log(`Minting failed: ${result.error}`, 'error');
+                }
+                
+                // Display the result
+                displayResult(result);
+                
+                // Re-enable the mint button
+                mintButton.disabled = false;
+                
+            } catch (error) {
+                log(`Error minting NFT: ${error.message}`, 'error');
+                
+                const mintStatus = document.getElementById('mint-status');
+                mintStatus.textContent = `Error: ${error.message}`;
+                mintStatus.className = 'status error';
+                
+                // Re-enable the mint button
+                document.getElementById('mint-nft').disabled = false;
+            }
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            log('Page loaded, setting up event listeners');
+            
+            // Connect wallet button
+            document.getElementById('connect-wallet').addEventListener('click', async () => {
+                try {
+                    log('Connecting wallet...');
+                    await web3Connector.connectWallet();
+                    updateWalletStatus(web3Connector.isConnected);
+                } catch (error) {
+                    log(`Error connecting wallet: ${error.message}`, 'error');
+                }
+            });
+            
+            // Generate image button
+            document.getElementById('generate-image').addEventListener('click', () => {
+                generateTestImage();
+            });
+            
+            // Mint NFT button
+            document.getElementById('mint-nft').addEventListener('click', async () => {
+                await mintNFT();
+            });
+            
+            // Clear log button
+            document.getElementById('clear-log').addEventListener('click', () => {
+                document.getElementById('log').innerHTML = '';
+                log('Log cleared');
+            });
+            
+            // Initialize Web3
+            initWeb3();
+        });
+    </script>
+</body>
+</html> 
