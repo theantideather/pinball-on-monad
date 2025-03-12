@@ -13,271 +13,286 @@
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
   <title>Web3 Space Cadet Pinball - Powered by Monad</title>
   <style>
+    @font-face {
+      font-family: 'Digital';
+      src: url('https://fonts.cdnfonts.com/s/7169/DIGITALDREAM.woff') format('woff');
+    }
+    
     :root {
-      --ActiveBorder: rgb(212, 208, 200);
-      --ActiveTitle: rgb(106, 10, 99);
-      --AppWorkspace: rgb(128, 128, 128);
-      --Background: linear-gradient(135deg, #8B5CF6, #6366F1, #3B82F6);
-      --ButtonAlternateFace: rgb(192, 192, 192);
-      --ButtonDkShadow: rgb(64, 64, 64);
-      --ButtonFace: rgb(212, 208, 200);
-      --ButtonHilight: rgb(255, 255, 255);
-      --ButtonLight: rgb(212, 208, 200);
-      --ButtonShadow: rgb(128, 128, 128);
-      --ButtonText: rgb(0, 0, 0);
-      --GradientActiveTitle: rgb(240, 166, 230);
-      --GradientInactiveTitle: rgb(192, 192, 192);
-      --GrayText: rgb(128, 128, 128);
-      --Hilight: rgb(106, 10, 99);
-      --HilightText: rgb(255, 255, 255);
-      --HotTrackingColor: rgb(128, 0, 128);
-      --InactiveBorder: rgb(212, 208, 200);
-      --InactiveTitle: rgb(128, 128, 128);
-      --InactiveTitleText: rgb(212, 208, 200);
-      --InfoText: rgb(0, 0, 0);
-      --InfoWindow: rgb(255, 255, 225);
-      --Menu: rgb(212, 208, 200);
-      --MenuBar: rgb(192, 192, 192);
-      --MenuHilight: rgb(128, 0, 128);
-      --MenuText: rgb(0, 0, 0);
-      --Scrollbar: rgb(212, 208, 200);
-      --TitleText: rgb(255, 255, 255);
-      --Window: rgb(255, 255, 255);
-      --WindowFrame: rgb(0, 0, 0);
-      --WindowText: rgb(0, 0, 0);
-      --monad-primary: #8B5CF6;  /* Updated to purple */
-      --monad-secondary: #6366f1; /* Indigo for secondary elements */
-      --monad-accent: #10b981;   /* Emerald green for accents */
+      /* Classic Space Cadet Pinball colors */
+      --background-color: #000000;
+      --panel-color: #222222;
+      --title-purple: #A37DFC;
+      --accent-purple: #8B5CF6;
+      --bright-purple: #9F7AEA;
+      --neon-blue: #4299E1;
+      --text-color: #CCCCCC;
+      --highlight-color: #FF0000;
+      --monad-primary: #8B5CF6;
+      --monad-secondary: #6366f1;
+      --monad-accent: #10b981;
       --neon-glow: 0 0 10px rgba(139, 92, 246, 0.7), 0 0 20px rgba(139, 92, 246, 0.5);
     }
 
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: var(--Background);
+      font-family: 'Courier New', monospace;
+      background-color: var(--background-color);
+      color: var(--text-color);
       text-align: center;
       min-height: 100vh;
       margin: 0;
-      padding: 20px;
+      padding: 0;
       box-sizing: border-box;
-      color: white;
       position: relative;
       overflow-x: hidden;
     }
 
-    textarea.emscripten {
-      font-family: monospace;
-      width: 80%
+    .digital-text {
+      font-family: 'Digital', 'Courier New', monospace;
+      color: var(--bright-purple);
+      text-shadow: 0 0 5px var(--bright-purple);
     }
 
     canvas.emscripten {
-      border: 0 none;
-      background-color: #000
+      border: 3px solid var(--accent-purple);
+      background-color: #000;
+      box-shadow: 0 0 15px var(--accent-purple);
+      height: 480px; /* Fixed height for canvas */
+      width: 640px; /* Fixed width for canvas */
+      display: block; /* Prevent inline display issues */
     }
 
-    .titlebar {
-      text-align: start;
-      margin: 0;
-      padding: 1px;
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      user-select: none
+    /* Game title and header */
+    .game-header {
+      background-color: var(--panel-color);
+      border-bottom: 2px solid var(--accent-purple);
+      padding: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
     }
 
-    .titlebar .titlebar-icon {
-      width: 16px;
-      height: 16px;
-      padding: 1px
-    }
-
-    .titlebar .titlebar-title {
-      display: flex;
-      padding: 0 2px;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      flex-grow: 1;
-      font-weight: 700;
-      align-items: center
-    }
-
-    .titlebar .titlebar-wincontrols {
-      display: inline-block;
-      margin: 0;
-      padding: 1px;
-      min-width: fit-content
-    }
-
-    .titlebar-wincontrols .buttons-wrapper {
-      display: inline-block;
-      width: auto;
-      margin: 0;
-      padding: 1px
-    }
-
-    .titlebar-wincontrols .spacer {
-      display: inline-block;
-      margin: 0;
-      padding: 0;
-      width: 2px
-    }
-
-    .titlebar-wincontrols .button {
-      display: inline-block;
-      min-width: 12px;
-      min-height: 10px;
-      width: 12px;
-      height: 10px;
-      text-align: center;
-      vertical-align: middle;
-      line-height: 10px
-    }
-
-    .window {
-      font-size: 8pt;
-      color: var(--WindowText);
-      background-color: var(--ButtonFace);
-      border: 1px solid var(--ActiveBorder);
-      box-shadow: -.5px -.5px 0 .5px var(--ButtonHilight), 0 0 0 1px var(--ButtonShadow), -.5px -.5px 0 1.5px var(--ButtonLight), 0 0 0 2px var(--ButtonDkShadow);
-      padding-right: 0;
-      margin-left: auto;
-      margin-right: auto;
-      display: inline-block
-    }
-
-    .window.active {
-      border: 1px solid var(--ActiveBorder)
-    }
-
-    .window.active .titlebar .titlebar-icon {
-      background-color: var(--ActiveTitle);
-      color: var(--TitleText)
-    }
-
-    .window.active .titlebar .titlebar-title {
-      background-color: var(--ActiveTitle);
-      background-image: linear-gradient(to right, var(--ActiveTitle), var(--GradientActiveTitle));
-      color: var(--TitleText)
-    }
-
-    .window.active .titlebar .titlebar-wincontrols,
-    .window.active .titlebar .titlebar-wincontrols .buttons-wrapper {
-      background-color: var(--GradientActiveTitle);
-      font-size: 8pt;
-      font-weight: 700
-    }
-
-    .button {
-      margin: 2px
-    }
-
-    .button span.button-content {
-      display: inline-block
-    }
-
-    .button:active .button-content {
-      transform: translate(1px, 1px)
-    }
-
-    .button {
-      background-color: var(--ButtonFace);
-      color: var(--ButtonText);
-      box-shadow: -.5px -.5px 0 .5px var(--ButtonLight), 0 0 0 1px var(--ButtonShadow), -.5px -.5px 0 1.5px var(--ButtonHilight), 0 0 0 2px var(--ButtonDkShadow)
-    }
-
-    .button:active {
-      box-shadow: -.5px -.5px 0 .5px var(--ButtonShadow), 0 0 0 1px var(--ButtonShadow), -.5px -.5px 0 1.5px var(--WindowFrame), 0 0 0 2px var(--WindowFrame)
-    }
-
-    .button svg path {
-      fill: var(--ButtonText)
-    }
-
-    .titlebar .button:active {
-      box-shadow: -.5px -.5px 0 .5px var(--ButtonShadow), 0 0 0 1px var(--ButtonLight), -.5px -.5px 0 1.5px var(--ButtonDkShadow), 0 0 0 2px var(--ButtonHilight)
-    }
-
-    #status {
-      margin: 40px 32px
-    }
-
-    .branding {
-      font-size: 24px;
-      color: white;
+    .game-title {
+      font-family: 'Arial', sans-serif;
       font-weight: bold;
-      margin: 20px 0;
-      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      font-size: 2.5em;
+      color: var(--title-purple);
+      text-transform: uppercase;
+      margin: 0;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px var(--accent-purple);
     }
 
-    .controls-container {
-      background-color: rgba(0, 0, 0, 0.7);
-      color: white;
+    .game-subtitle {
+      font-family: 'Arial', sans-serif;
+      color: var(--neon-blue);
+      margin-top: 5px;
+      font-size: 1.2em;
+    }
+
+    /* Classic menu bar styling */
+    .menu-bar {
+      background-color: var(--panel-color);
+      display: flex;
+      padding: 5px 10px;
+      border-bottom: 1px solid var(--accent-purple);
+      justify-content: flex-start;
+      font-family: 'Arial', sans-serif;
+      font-size: 14px;
+    }
+
+    .menu-item {
+      color: var(--text-color);
+      margin-right: 20px;
+      cursor: pointer;
+    }
+
+    .menu-item:hover {
+      color: var(--bright-purple);
+      text-decoration: underline;
+    }
+
+    /* Game container with classic layout */
+    .game-container {
+      display: flex;
+      flex-direction: row;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 10px;
+    }
+
+    .game-board {
+      flex: 7;
+      padding-right: 10px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .game-sidebar {
+      flex: 3;
+      background-color: var(--panel-color);
+      border: 2px solid var(--accent-purple);
+      border-radius: 5px;
       padding: 15px;
-      margin: 20px auto;
-      max-width: 500px;
-      border-radius: 10px;
-      text-align: left;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
     }
 
-    .controls-title {
-      text-align: center;
+    .emscripten_border {
+      display: inline-block;
+      border: 2px solid var(--accent-purple);
+      box-shadow: var(--neon-glow);
+      background: #000;
+      padding: 5px;
+      margin-bottom: 15px;
+    }
+
+    /* Score display */
+    .score-display {
+      background-color: #000;
+      border: 2px solid var(--accent-purple);
+      padding: 10px;
+      margin-bottom: 20px;
+      font-family: 'Digital', 'Courier New', monospace;
+      color: var(--bright-purple);
+      text-align: right;
+      font-size: 2em;
+      position: relative;
+    }
+
+    .score-display::before {
+      content: "SCORE";
+      position: absolute;
+      top: 5px;
+      left: 10px;
+      font-size: 0.5em;
+      color: var(--text-color);
+    }
+
+    /* Status indicators */
+    .status-panel {
+      background-color: #111;
+      border: 1px solid var(--accent-purple);
+      padding: 10px;
+      margin-bottom: 15px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .status-title {
+      color: var(--title-purple);
+      font-weight: bold;
       margin-bottom: 10px;
-      font-size: 16px;
-      color: #f8c291;
+      text-align: center;
+      border-bottom: 1px solid var(--accent-purple);
+      padding-bottom: 5px;
+    }
+
+    .status-item {
+      display: flex;
+      justify-content: space-between;
+      margin: 5px 0;
+    }
+
+    .status-label {
+      color: var(--text-color);
+    }
+
+    .status-value {
+      color: var(--bright-purple);
+      font-weight: bold;
+    }
+
+    /* Controls legend */
+    .controls-legend {
+      background-color: #111;
+      border: 1px solid var(--accent-purple);
+      padding: 10px;
+      margin-top: auto;
     }
 
     .control-item {
-      margin: 5px 0;
       display: flex;
       justify-content: space-between;
+      margin: 5px 0;
     }
 
     .key {
-      background-color: rgba(255, 255, 255, 0.2);
+      background-color: #333;
+      color: var(--bright-purple);
       padding: 2px 6px;
-      border-radius: 4px;
+      border-radius: 3px;
+      border: 1px solid var(--accent-purple);
       font-family: monospace;
     }
 
-    /* Welcome Banner Styles */
-    .welcome-banner {
-      background-color: rgba(0, 0, 0, 0.8);
-      color: white;
-      padding: 20px;
-      border-radius: 15px;
-      margin: 0 auto 20px auto;
-      max-width: 800px;
-      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.6);
-      border: 2px solid var(--monad-primary);
-      animation: glowing 3s infinite alternate;
-    }
-    
-    @keyframes glowing {
-      from { box-shadow: 0 0 10px var(--monad-primary); }
-      to { box-shadow: 0 0 20px var(--monad-primary), 0 0 30px var(--monad-secondary); }
-    }
-    
-    .welcome-banner h1 {
-      color: var(--monad-primary);
-      margin-top: 0;
-      font-size: 2.5em;
-      text-shadow: var(--neon-glow);
-      letter-spacing: 1px;
-    }
-    
-    .highlight {
-      color: var(--monad-accent);
-      font-weight: bold;
-    }
-    
-    .monad-highlight {
-      color: var(--monad-primary);
-      font-weight: bold;
-      text-shadow: var(--neon-glow);
+    /* Transaction feed styled like classic game console */
+    #transaction-feed {
+      background-color: #111;
+      border: 1px solid var(--accent-purple);
+      width: auto;
+      height: 150px;
+      overflow-y: auto;
+      margin: 20px 0;
+      padding: 10px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      text-align: left;
     }
 
-    /* Game Modal Styles */
+    .transaction-item {
+      border-bottom: 1px dashed #444;
+      padding: 5px 0;
+      color: var(--text-color);
+    }
+
+    .transaction-hash {
+      color: var(--monad-accent);
+      font-family: monospace;
+    }
+
+    .transaction-status {
+      color: #10b981;
+    }
+
+    #end-game-btn {
+      background-color: #340056;
+      color: white;
+      border: 1px solid var(--accent-purple);
+      padding: 8px 15px;
+      font-family: 'Arial', sans-serif;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: all 0.3s;
+      width: 200px;
+    }
+
+    #end-game-btn:hover {
+      background-color: var(--accent-purple);
+      box-shadow: 0 0 10px var(--accent-purple);
+    }
+
+    /* Footer with classic style */
+    .footer {
+      background-color: var(--panel-color);
+      padding: 10px;
+      margin-top: 30px;
+      border-top: 2px solid var(--accent-purple);
+      font-size: 12px;
+      color: var(--text-color);
+    }
+
+    .footer a {
+      color: var(--bright-purple);
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Game over modal with classic styling */
     #game-over-modal {
       display: none;
       position: fixed;
@@ -289,408 +304,223 @@
       z-index: 1000;
       justify-content: center;
       align-items: center;
-      flex-direction: column;
     }
     
     .modal-content {
-      background-color: rgba(20, 20, 20, 0.95);
-      border: 2px solid #6a0a63;
-      border-radius: 10px;
+      background-color: var(--panel-color);
+      border: 3px solid var(--accent-purple);
+      border-radius: 5px;
       width: 90%;
       max-width: 600px;
       padding: 20px;
-      color: white;
-      box-shadow: 0 0 20px rgba(106, 10, 99, 0.7);
-    }
-    
-    .game-over {
-      text-align: center;
-      margin-bottom: 20px;
+      color: var(--text-color);
+      box-shadow: 0 0 20px var(--accent-purple);
     }
     
     .game-over h1 {
-      color: #FFD700;
+      color: var(--title-purple);
       font-size: 2em;
-      margin: 10px 0;
-    }
-    
-    .button-group {
-      display: flex;
-      justify-content: center;
-      margin: 20px 0;
-      flex-wrap: wrap;
+      text-transform: uppercase;
+      letter-spacing: 2px;
     }
     
     .button-group button {
+      background-color: #340056;
+      color: white;
+      border: 1px solid var(--accent-purple);
+      padding: 8px 15px;
       margin: 5px;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 5px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    
-    #share-twitter-btn {
-      background-color: #1DA1F2;
-      color: white;
-    }
-    
-    #share-twitter-btn:hover {
-      background-color: #0d8bd9;
-    }
-    
-    #share-twitter-btn.loading {
-      background-color: #1DA1F2;
-      color: rgba(255, 255, 255, 0.5);
-      pointer-events: none;
-      position: relative;
-    }
-    
-    #play-again-btn {
-      background-color: #4caf50;
-      color: white;
-    }
-    
-    #play-again-btn:hover {
-      background-color: #66bb6a;
-    }
-    
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    
-    #end-game-btn {
-      background-color: transparent;
-      color: white;
-      border: 1px solid white;
-      padding: 5px 10px;
-      margin: 5px;
-      border-radius: 3px;
-      font-size: 0.8em;
       cursor: pointer;
     }
     
-    #end-game-btn:hover {
-      background-color: rgba(255, 255, 255, 0.1);
+    .button-group button:hover {
+      background-color: var(--accent-purple);
+      box-shadow: 0 0 10px var(--accent-purple);
     }
-    
-    #score-screenshot {
-      max-width: 100%;
-      height: auto;
-      border-radius: 5px;
-      margin-top: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    }
-    
-    .stats-info {
-      background-color: rgba(0, 0, 0, 0.3);
-      border-radius: 5px;
-      padding: 10px;
-      margin: 15px 0;
-      text-align: center;
-      border-left: 3px solid #00BFFF;
-    }
-    
-    .action-counter {
-      font-size: 1.2em;
-      color: #FFD700;
-      font-weight: bold;
-    }
-    
-    .success-message {
-      background-color: rgba(76, 175, 80, 0.3);
-      color: #4caf50;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 5px;
-      display: none;
-    }
-    
-    .pulse {
-      animation: pulse 2s infinite;
-    }
-    
-    @keyframes pulse {
-      0% {
-        transform: scale(1);
-      }
-      50% {
-        transform: scale(1.05);
-      }
-      100% {
-        transform: scale(1);
-      }
-    }
-    
-    .monad-branding {
-      position: fixed;
-      bottom: 10px;
-      right: 10px;
-      background-color: rgba(0, 0, 0, 0.8);
-      color: white;
-      padding: 8px 15px;
-      border-radius: 20px;
-      font-size: 12px;
-      z-index: 10;
-      border: 1px solid var(--monad-primary);
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-    
-    .monad-logo {
-      width: 20px;
-      height: 20px;
-      background-color: var(--monad-primary);
-      border-radius: 50%;
-      display: inline-block;
-    }
-    
-    /* Gas meter */
-    #gas-meter {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      background-color: rgba(0, 0, 0, 0.8);
-      border-radius: 20px;
-      padding: 8px 15px;
-      color: white;
-      font-size: 12px;
-      border: 1px solid var(--monad-primary);
-      z-index: 100;
-    }
-    
-    #gas-value {
-      color: var(--monad-accent);
-      font-weight: bold;
-    }
-    
-    /* Blockchain status indicator */
-    #blockchain-status {
-      position: fixed;
+
+    /* Monad blockchain status indicators */
+    .blockchain-indicator {
+      position: absolute;
       top: 10px;
       left: 10px;
-      background-color: rgba(0, 0, 0, 0.8);
+      background-color: rgba(0, 0, 0, 0.7);
+      border: 1px solid var(--accent-purple);
       border-radius: 20px;
-      padding: 8px 15px;
-      color: white;
+      padding: 5px 10px;
       font-size: 12px;
-      border: 1px solid var(--monad-primary);
-      z-index: 100;
       display: flex;
       align-items: center;
       gap: 5px;
+      z-index: 10;
     }
-    
-    .status-indicator {
-      width: 10px;
-      height: 10px;
+
+    .indicator-dot {
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
-      background-color: var(--monad-accent);
-      display: inline-block;
+      background-color: #10b981;
       animation: pulse 2s infinite;
     }
 
-    /* Transaction Notification Styles */
-    #transaction-feed {
-      position: fixed;
-      bottom: 70px;
-      right: 10px;
-      width: 350px;
-      max-height: 200px;
-      overflow-y: auto;
-      background-color: rgba(0, 0, 0, 0.8);
-      border-radius: 10px;
-      padding: 10px;
-      color: white;
-      z-index: 100;
-      border: 1px solid var(--monad-primary);
-      box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
-      font-size: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    
-    .transaction-item {
-      padding: 8px;
-      border-radius: 8px;
-      background-color: rgba(99, 102, 241, 0.2);
-      border-left: 3px solid var(--monad-primary);
-      text-align: left;
-      margin-bottom: 5px;
-      animation: fadeIn 0.5s ease-in-out;
-      display: flex;
-      justify-content: space-between;
-    }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    .transaction-hash {
-      font-family: monospace;
-      color: var(--monad-accent);
-      font-size: 0.8em;
-      word-break: break-all;
-    }
-    
-    .transaction-status {
-      font-size: 0.8em;
-      color: #10b981;
-    }
-    
-    .transaction-time {
-      font-size: 0.7em;
-      color: #9ca3af;
-      margin-top: 3px;
+    .progress {
+      height: 20px;
+      background-color: #111;
+      border: 1px solid var(--accent-purple);
+      border-radius: 5px;
+      overflow: hidden;
+      margin-top: 5px;
+      width: 80%;
+      max-width: 640px;
+      margin: 5px auto;
     }
 
-    /* Updated Game Stats */
-    #game-stats {
-      background-color: rgba(0, 0, 0, 0.7);
-      border-radius: 10px;
-      padding: 15px;
-      margin-top: 15px;
-      display: flex;
-      justify-content: space-around;
-      max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
-      border: 1px solid var(--monad-primary);
-      box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+    .progress-bar {
+      height: 100%;
+      background-color: var(--accent-purple);
+      width: 0%;
+      transition: width 0.3s ease;
     }
 
-    .stat-item {
+    #status {
+      color: var(--bright-purple);
+      margin: 15px 0;
+      font-family: 'Courier New', monospace;
+    }
+
+    #status-container {
+      margin: 10px auto;
+      width: 80%;
+      max-width: 640px;
       text-align: center;
-      color: white;
-      padding: 0 15px;
     }
 
-    .stat-value {
-      font-size: 1.8em;
-      font-weight: bold;
-      color: var(--monad-primary);
-      text-shadow: 0 0 5px rgba(59, 130, 246, 0.7);
+    @keyframes pulse {
+      0% { opacity: 0.5; }
+      50% { opacity: 1; }
+      100% { opacity: 0.5; }
     }
 
-    .stat-label {
-      font-size: 0.9em;
-      color: #e5e7eb;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    /* Footer styles */
-    .footer {
-      position: fixed;
-      bottom: 10px;
-      left: 0;
-      width: 100%;
-      text-align: center;
-      padding: 10px 0;
-      color: white;
-      font-size: 14px;
-      z-index: 10;
-      text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    }
-    
-    .footer a {
-      color: var(--monad-accent);
-      text-decoration: none;
-      transition: all 0.3s ease;
-    }
-    
-    .footer a:hover {
-      color: white;
-      text-shadow: var(--neon-glow);
-    }
-    
-    .heart {
-      color: #ff4d6d;
-      display: inline-block;
-      animation: heartbeat 1.5s infinite;
-    }
-    
-    @keyframes heartbeat {
-      0% { transform: scale(1); }
-      25% { transform: scale(1.2); }
-      50% { transform: scale(1); }
-      75% { transform: scale(1.2); }
-      100% { transform: scale(1); }
+    @media (max-width: 768px) {
+      .game-container {
+        flex-direction: column;
+      }
+      
+      .game-board, .game-sidebar {
+        width: 100%;
+        padding: 0;
+        margin-bottom: 20px;
+      }
+      
+      canvas.emscripten {
+        width: 100%;
+        height: auto;
+      }
     }
   </style>
 </head>
 
 <body>
-  <!-- Background Animation -->
-  <div class="bg-animation-container" id="bg-animation"></div>
-
-  <!-- Blockchain Status Indicator -->
-  <div id="blockchain-status">
-    <span class="status-indicator"></span>
-    <span>Connected to <span class="monad-highlight">Monad Testnet</span></span>
-  </div>
-  
-  <!-- Gas Meter -->
-  <div id="gas-meter">
-    Gas: <span id="gas-value">0.0015</span> MONAD
+  <!-- Classic Menu Bar -->
+  <div class="menu-bar">
+    <div class="menu-item">Game</div>
+    <div class="menu-item">Options</div>
+    <div class="menu-item">Help</div>
   </div>
 
-  <!-- Welcome Banner -->
-  <div class="welcome-banner">
-    <h1>Web3 Space Cadet Pinball</h1>
-    <p>Welcome to the world's first Web3 pinball game where <span class="highlight">EVERY tap, flip, and move</span> is recorded on the <span class="monad-highlight">Monad blockchain</span>!</p>
-    <p>Play the game, make as many moves as possible, and let's break Monad with our transactions!</p>
-    <p><strong>How it works:</strong> Every flipper, bumper, and plunger action triggers a transaction on Monad's blazing-fast blockchain.</p>
+  <!-- Game Header with Title -->
+  <div class="game-header">
+    <h1 class="game-title">3D Pinball Space Cadet</h1>
+    <div class="game-subtitle">Powered by Monad Blockchain</div>
   </div>
 
-  <div class="emscripten_border" style="box-shadow: 0 0 20px var(--monad-primary);">
-    <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
-  </div>
-  
-  <!-- End Game button -->
-  <button id="end-game-btn" title="End the current game and share your score">End Game & Share</button>
-
-  <!-- Game Stats -->
-  <div id="game-stats">
-    <div class="stat-item">
-      <div class="stat-value" id="current-score">0</div>
-      <div class="stat-label">Score</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-value" id="current-actions">0</div>
-      <div class="stat-label">Transactions</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-value" id="gas-used">0.0000</div>
-      <div class="stat-label">Gas Used</div>
+  <!-- Status Display -->
+  <div id="status-container">
+    <div id="status" class="digital-text">Downloading...</div>
+    <div id="progress" class="progress">
+      <div class="progress-bar" id="progress-bar"></div>
     </div>
   </div>
 
-  <!-- Transaction Feed -->
-  <div id="transaction-feed"></div>
+  <!-- Game Container with Classic Layout -->
+  <div class="game-container">
+    <!-- Game Board -->
+    <div class="game-board">
+      <div class="emscripten_border">
+        <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex="0"></canvas>
+      </div>
+      
+      <!-- End Game Button -->
+      <button id="end-game-btn" title="End the current game and share your score">End Game & Share</button>
+      
+      <!-- Blockchain Status Indicator (overlaid on game) -->
+      <div class="blockchain-indicator">
+        <span class="indicator-dot"></span>
+        <span>Monad Testnet</span>
+      </div>
+    </div>
+    
+    <!-- Game Sidebar with Stats and Controls -->
+    <div class="game-sidebar">
+      <!-- Score Display -->
+      <div class="score-display" id="current-score">0</div>
+      
+      <!-- Status Panel -->
+      <div class="status-panel">
+        <div class="status-title">BLOCKCHAIN STATUS</div>
+        <div class="status-item">
+          <span class="status-label">Transactions:</span>
+          <span class="status-value" id="current-actions">0</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Gas Used:</span>
+          <span class="status-value" id="gas-used">0.0000</span>
+        </div>
+      </div>
+      
+      <!-- Transaction Feed -->
+      <div class="status-title">RECENT TRANSACTIONS</div>
+      <div id="transaction-feed"></div>
+      
+      <!-- Controls Legend -->
+      <div class="controls-legend">
+        <div class="status-title">CONTROLS</div>
+        <div class="control-item">
+          <span class="status-label">Left Flipper:</span>
+          <span class="key">Z</span>
+        </div>
+        <div class="control-item">
+          <span class="status-label">Right Flipper:</span>
+          <span class="key">/</span>
+        </div>
+        <div class="control-item">
+          <span class="status-label">Plunger:</span>
+          <span class="key">Space</span>
+        </div>
+        <div class="control-item">
+          <span class="status-label">Nudge:</span>
+          <span class="key">Shift</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Game Over Modal -->
   <div id="game-over-modal">
     <div class="modal-content">
       <div class="game-over">
         <h1>Game Over!</h1>
-        <div id="final-score">0</div>
+        <div id="final-score" class="digital-text" style="font-size: 3em;">0</div>
       </div>
       
-      <div class="stats-info">
-        <p>You made <span class="action-counter" id="action-counter">0</span> transactions on the <span class="monad-highlight">Monad blockchain</span>!</p>
-        <p>Total gas used: <span id="final-gas-used">0.0000</span> MONAD</p>
+      <div class="status-panel">
+        <p>You made <span class="status-value" id="action-counter">0</span> transactions on the Monad blockchain!</p>
+        <p>Total gas used: <span class="status-value" id="final-gas-used">0.0000</span> MONAD</p>
       </div>
       
       <!-- Screenshot Section -->
       <div id="screenshot-section">
         <h3>Your Gameplay Screenshot</h3>
-        <img id="score-screenshot" alt="Score Screenshot">
-        <div class="success-message" id="share-success">Successfully copied to clipboard!</div>
+        <img id="score-screenshot" alt="Score Screenshot" style="max-width: 100%; border: 2px solid var(--accent-purple);">
       </div>
       
       <div class="button-group">
@@ -699,146 +529,90 @@
       </div>
     </div>
   </div>
-
-  <div id="status-container">
-    <div id="status">Downloading...</div>
-    <div id="progress" style="display: none;"></div>
-  </div>
-
+  
   <div id="output"></div>
 
-  <!-- Footer with creator info -->
+  <!-- Footer -->
   <div class="footer">
-    Made with <span class="heart">♥</span> by theantideather | <a href="https://x.com/omg14doteth?s=21" target="_blank">@omg14doteth</a>
+    Made with ♥ by theantideather | <a href="https://x.com/omg14doteth?s=21" target="_blank">@omg14doteth</a>
   </div>
 
-  <!-- Monad branding -->
-  <div class="monad-branding">
-    <span class="monad-logo"></span>
-    Powered by Monad Blockchain
-  </div>
-
+  <!-- Required Scripts -->
   <script>
-    var statusElement = document.getElementById("status");
-    var progressElement = document.getElementById("progress");
     var Module = {
       preRun: [],
       postRun: [],
-      print: function () {
-        var e = document.getElementById("output");
-        return e && (e.value = ""), function (e) {
-          arguments.length > 1 && (e = Array.prototype.slice.call(arguments).join(" ")), console.log(e)
-        }
+      canvas: (function() {
+        var canvas = document.getElementById('canvas');
+        canvas.addEventListener("webglcontextlost", function(e) { 
+          alert('WebGL context lost. You will need to reload the page.'); 
+          e.preventDefault(); 
+        }, false);
+        
+        // Add this to make sure canvas gets focus when clicked
+        canvas.addEventListener('click', function() {
+          canvas.focus();
+        });
+        
+        return canvas;
+      })(),
+      print: function(text) {
+        if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+        console.log(text);
       },
-      printErr: function (e) {
-        arguments.length > 1 && (e = Array.prototype.slice.call(arguments).join(" ")), console.error(e)
+      printErr: function(text) {
+        if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+        console.error(text);
       },
-      canvas: function () {
-        var e = document.getElementById("canvas");
-        return e.addEventListener("webglcontextlost", (function (e) {
-          alert("WebGL context lost. You will need to reload the page."), e.preventDefault()
-        }), !1), e
-      }(),
-      setStatus: function (e) {
-        if (Module.setStatus.last || (Module.setStatus.last = {
-          time: Date.now(),
-          text: ""
-        }), e !== Module.setStatus.last.text) {
-          var t = e.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/),
-            n = Date.now();
-          if (!(t && n - Module.setStatus.last.time < 30)) {
-            if (Module.setStatus.last.time = n, Module.setStatus.last.text = e, t) e = t[1], progressElement.value = 100 * parseInt(t[2]), progressElement.max = 100 * parseInt(t[4]), progressElement.hidden = !1;
-            else progressElement.value = null, progressElement.max = null, progressElement.hidden = !0, document.getElementById("canvas").style.display = "";
-            statusElement.innerHTML = e, "" === e ? (statusElement.style.display = "none", progressElement.style.display = "none") : (statusElement.style.display = "", progressElement.style.display = "")
-          }
+      setStatus: function(text) {
+        if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
+        if (text === Module.setStatus.last.text) return;
+        
+        var statusElement = document.getElementById('status');
+        var progressElement = document.getElementById('progress');
+        var progressBarElement = document.getElementById('progress-bar');
+        
+        var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
+        var now = Date.now();
+        
+        if (m && now - Module.setStatus.last.time < 30) return; // too soon
+        
+        Module.setStatus.last.time = now;
+        Module.setStatus.last.text = text;
+        
+        if (m) {
+          text = m[1];
+          var progressValue = parseInt(m[2])*100;
+          var progressMax = parseInt(m[4])*100;
+          progressElement.style.display = 'block';
+          progressBarElement.style.width = progressValue + '%';
+        } else {
+          progressElement.style.display = text ? 'block' : 'none';
         }
+        
+        statusElement.innerHTML = text;
       },
       totalDependencies: 0,
-      monitorRunDependencies: function (e) {
-        this.totalDependencies = Math.max(this.totalDependencies, e), Module.setStatus(e ? "Preparing... (" + (this.totalDependencies - e) + "/" + this.totalDependencies + ")" : "All downloads complete.")
+      monitorRunDependencies: function(left) {
+        this.totalDependencies = Math.max(this.totalDependencies, left);
+        Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
       }
     };
-    Module.setStatus("Downloading..."), window.onerror = function () {
-      Module.setStatus("Exception thrown, see JavaScript console"), Module.setStatus = function (e) {
-        e && Module.printErr("[post-exception status] " + e)
-      }
-    }
+    
+    Module.setStatus('Downloading...');
+    
+    window.onerror = function(message, source, lineno, colno, error) {
+      if (error) console.error(error);
+      Module.setStatus('Exception thrown, see JavaScript console');
+      Module.setStatus = function(text) {
+        if (text) Module.printErr('[post-exception status] ' + text);
+      };
+    };
   </script>
   <script async src="SpaceCadetPinball.js"></script>
 
   <!-- Game Interaction Script -->
   <script>
-    // Background animation setup
-    document.addEventListener('DOMContentLoaded', function() {
-      const bgContainer = document.getElementById('bg-animation');
-      
-      // Create floating particles
-      for (let i = 0; i < 20; i++) {
-        createFloatingParticle(bgContainer);
-      }
-      
-      // Create floating cubes
-      for (let i = 0; i < 3; i++) {
-        createFloatingCube(bgContainer);
-      }
-    });
-    
-    function createFloatingParticle(container) {
-      const particle = document.createElement('div');
-      particle.className = 'floating-particle';
-      
-      // Random size, position, and animation duration
-      const size = Math.random() * 50 + 20;
-      const left = Math.random() * 100;
-      const delay = Math.random() * 15;
-      const duration = Math.random() * 10 + 15;
-      
-      particle.style.width = `${size}px`;
-      particle.style.height = `${size}px`;
-      particle.style.left = `${left}vw`;
-      particle.style.animationDuration = `${duration}s`;
-      particle.style.animationDelay = `-${delay}s`;
-      
-      container.appendChild(particle);
-    }
-    
-    function createFloatingCube(container) {
-      const cube = document.createElement('div');
-      cube.className = 'cube';
-      
-      // Random position and animation properties
-      const left = Math.random() * 90 + 5;
-      const top = Math.random() * 70 + 15;
-      const delay = Math.random() * 10;
-      const duration = Math.random() * 10 + 20;
-      
-      cube.style.left = `${left}vw`;
-      cube.style.top = `${top}vh`;
-      cube.style.animationDuration = `${duration}s`;
-      cube.style.animationDelay = `-${delay}s`;
-      
-      // Create cube faces
-      for (let i = 0; i < 6; i++) {
-        const face = document.createElement('div');
-        face.className = 'cube-face';
-        
-        // Position each face
-        const transforms = [
-          'translateZ(40px)',
-          'rotateY(180deg) translateZ(40px)',
-          'rotateY(90deg) translateZ(40px)',
-          'rotateY(-90deg) translateZ(40px)',
-          'rotateX(90deg) translateZ(40px)',
-          'rotateX(-90deg) translateZ(40px)'
-        ];
-        
-        face.style.transform = transforms[i];
-        cube.appendChild(face);
-      }
-      
-      container.appendChild(cube);
-    }
-  
     // Game handling logic
     document.addEventListener('DOMContentLoaded', function () {
       console.log("DOM content loaded - initializing game");
@@ -851,6 +625,9 @@
       let scoreCheckInterval = null;
       let actionCount = 0; // Count of actions/transactions
       let totalGasUsed = 0.0000; // Track total gas used
+      
+      // Make sure canvas has focus for keyboard input
+      gameCanvas.focus();
       
       // Transaction feed
       const transactionFeed = document.getElementById('transaction-feed');
@@ -869,7 +646,11 @@
       const playAgainBtn = document.getElementById('play-again-btn');
       const endGameBtn = document.getElementById('end-game-btn');
       const scoreScreenshot = document.getElementById('score-screenshot');
-      const shareSuccess = document.getElementById('share-success');
+
+      // Make sure the canvas has focus for keyboard events
+      gameCanvas.addEventListener('click', function() {
+        gameCanvas.focus();
+      });
 
       // End Game button handler
       endGameBtn.addEventListener('click', function() {
@@ -914,12 +695,6 @@
         
         // Add transaction to feed with animation
         addTransactionToFeed(actionType, txHash, gasForTransaction);
-        
-        // Flash the action counter to show activity
-        currentActions.classList.add('pulse');
-        setTimeout(() => {
-          currentActions.classList.remove('pulse');
-        }, 1000);
       }
       
       // Generate a mock transaction hash
@@ -956,12 +731,9 @@
         
         // Create the content
         txElement.innerHTML = `
-          <div>
-            <div><strong>${actionName}</strong> | Gas: ${gas} MONAD</div>
-            <div class="transaction-hash">${shortHash}</div>
-            <div class="transaction-time">${time}</div>
-          </div>
-          <div class="transaction-status">Confirmed</div>
+          <div>${actionName} | Gas: ${gas}</div>
+          <div class="transaction-hash">${shortHash}</div>
+          <div style="color:#777; font-size:0.9em">${time}</div>
         `;
         
         // Add to feed at the top
@@ -971,14 +743,6 @@
         while (transactionFeed.children.length > MAX_VISIBLE_TRANSACTIONS) {
           transactionFeed.removeChild(transactionFeed.lastChild);
         }
-        
-        // Animate transaction confirmation after a delay
-        setTimeout(() => {
-          if (txElement.parentNode === transactionFeed) {
-            txElement.querySelector('.transaction-status').textContent = 'Confirmed';
-            txElement.querySelector('.transaction-status').style.color = '#10b981';
-          }
-        }, 1000 + Math.random() * 1000);
       }
 
       // Function to read the game's memory to detect game state changes
@@ -989,7 +753,7 @@
           // Get current score
           const score = typeof Module.getScore === 'function' ? 
             Module.getScore() : 
-            (Module.mem ? parseInt(Module.mem[0x4A]) : Math.floor(Math.random() * 10000000));
+            (Module.mem ? parseInt(Module.mem[0x4A]) : Math.floor(Math.random() * 1000000));
           
           // Update score tracking
           if (score > lastKnownScore) {
@@ -1021,86 +785,90 @@
           screenshotCanvas.height = 480;
           const ctx = screenshotCanvas.getContext('2d');
           
-          // Create a nice background - updated with blockchain theme
-          const gradient = ctx.createLinearGradient(0, 0, 0, screenshotCanvas.height);
-          gradient.addColorStop(0, '#8B5CF6');  // Purple
-          gradient.addColorStop(1, '#3B82F6');  // Blue
-          
-          // Fill background
-          ctx.fillStyle = gradient;
+          // Create a classic game-style background
+          ctx.fillStyle = '#000000';
           ctx.fillRect(0, 0, screenshotCanvas.width, screenshotCanvas.height);
           
-          // Add decorative elements
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-          for (let i = 0; i < 20; i++) {
-            const x = Math.random() * screenshotCanvas.width;
-            const y = Math.random() * screenshotCanvas.height;
-            const radius = Math.random() * 5 + 2;
-            ctx.beginPath();
-            ctx.arc(x, y, radius, 0, Math.PI * 2);
-            ctx.fill();
-          }
-          
-          // Draw the Monad logo (simplified)
-          ctx.fillStyle = '#10b981';
-          ctx.beginPath();
-          ctx.arc(320, 100, 30, 0, Math.PI * 2);
-          ctx.fill();
-          
-          // Text shadow
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-          ctx.shadowBlur = 10;
-          ctx.shadowOffsetX = 5;
-          ctx.shadowOffsetY = 5;
+          // Add header
+          ctx.fillStyle = '#222222';
+          ctx.fillRect(0, 0, screenshotCanvas.width, 60);
           
           // Draw title
-          ctx.fillStyle = '#FFD700';  // Gold
-          ctx.font = 'bold 36px Arial';
+          ctx.fillStyle = '#A37DFC';
+          ctx.font = 'bold 24px Arial';
           ctx.textAlign = 'center';
-          ctx.fillText('Web3 Space Cadet Pinball', screenshotCanvas.width/2, 60);
+          ctx.fillText('3D PINBALL SPACE CADET', screenshotCanvas.width/2, 30);
+          ctx.fillStyle = '#4299E1';
+          ctx.font = '14px Arial';
+          ctx.fillText('Powered by Monad Blockchain', screenshotCanvas.width/2, 50);
           
-          // Draw "on Monad" text
-          ctx.fillStyle = '#8B5CF6';  // Purple
-          ctx.font = 'bold 24px Arial';
-          ctx.fillText('on Monad Blockchain', screenshotCanvas.width/2, 95);
+          // Draw score area
+          ctx.fillStyle = '#222222';
+          ctx.fillRect(screenshotCanvas.width - 200, 70, 190, 60);
+          ctx.strokeStyle = '#A37DFC';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(screenshotCanvas.width - 200, 70, 190, 60);
           
-          // Add score
-          ctx.fillStyle = '#FFFFFF';
-          ctx.font = 'bold 64px Arial';
-          ctx.fillText(lastKnownScore.toLocaleString(), screenshotCanvas.width/2, 200);
+          ctx.fillStyle = '#A37DFC';
+          ctx.font = 'bold 30px Courier';
+          ctx.textAlign = 'right';
+          ctx.fillText(lastKnownScore.toLocaleString(), screenshotCanvas.width - 20, 110);
           
-          // Add transaction count
-          ctx.fillStyle = '#FFD700';
-          ctx.font = 'bold 28px Arial';
-          ctx.fillText(`${actionCount} Transactions on Blockchain`, screenshotCanvas.width/2, 260);
+          ctx.fillStyle = '#CCCCCC';
+          ctx.font = '14px Arial';
+          ctx.textAlign = 'left';
+          ctx.fillText('SCORE', screenshotCanvas.width - 190, 90);
           
-          // Add gas used
-          ctx.fillStyle = '#10b981';
-          ctx.font = 'bold 24px Arial';
-          ctx.fillText(`${totalGasUsed.toFixed(4)} MONAD Gas Used`, screenshotCanvas.width/2, 300);
+          // Add blockchain data
+          ctx.fillStyle = '#222222';
+          ctx.fillRect(screenshotCanvas.width - 200, 140, 190, 80);
+          ctx.strokeStyle = '#A37DFC';
+          ctx.strokeRect(screenshotCanvas.width - 200, 140, 190, 80);
           
-          // Add date
-          ctx.fillStyle = '#FFFFFF';
-          ctx.font = '20px Arial';
-          ctx.fillText(new Date().toLocaleDateString(), screenshotCanvas.width/2, 340);
+          ctx.fillStyle = '#A37DFC';
+          ctx.font = 'bold 16px Arial';
+          ctx.textAlign = 'center';
+          ctx.fillText('BLOCKCHAIN DATA', screenshotCanvas.width - 105, 160);
+          
+          ctx.fillStyle = '#CCCCCC';
+          ctx.font = '14px Arial';
+          ctx.textAlign = 'left';
+          ctx.fillText('Transactions:', screenshotCanvas.width - 190, 180);
+          ctx.fillText('Gas Used:', screenshotCanvas.width - 190, 200);
+          
+          ctx.fillStyle = '#A37DFC';
+          ctx.textAlign = 'right';
+          ctx.fillText(actionCount, screenshotCanvas.width - 20, 180);
+          ctx.fillText(totalGasUsed.toFixed(4), screenshotCanvas.width - 20, 200);
           
           // Try to draw the original canvas on top for authenticity
           if (canvas) {
             try {
-              ctx.globalAlpha = 0.3;
-              ctx.drawImage(canvas, 0, 0, screenshotCanvas.width, screenshotCanvas.height);
-              ctx.globalAlpha = 1.0;
+              // Draw game canvas in a stylized area
+              ctx.strokeStyle = '#A37DFC';
+              ctx.lineWidth = 3;
+              ctx.strokeRect(10, 70, screenshotCanvas.width - 220, 390);
+              
+              ctx.drawImage(canvas, 10, 70, screenshotCanvas.width - 220, 390);
             } catch (e) {
               console.warn("Could not draw original canvas:", e);
+              
+              // Draw placeholder text
+              ctx.fillStyle = '#A37DFC';
+              ctx.font = '20px Arial';
+              ctx.textAlign = 'center';
+              ctx.fillText('[GAME SCREEN]', (screenshotCanvas.width - 200) / 2, 200);
             }
           }
           
-          // Add call to action and creator credit
-          ctx.fillStyle = '#FFFFFF';
-          ctx.font = '18px Arial';
-          ctx.fillText('Play now at pinballonmonad.netlify.app', screenshotCanvas.width/2, 400);
-          ctx.font = '16px Arial';
-          ctx.fillText('by @omg14doteth', screenshotCanvas.width/2, 430);
+          // Add footer information
+          ctx.fillStyle = '#222222';
+          ctx.fillRect(0, screenshotCanvas.height - 40, screenshotCanvas.width, 40);
+          
+          ctx.fillStyle = '#CCCCCC';
+          ctx.font = '12px Arial';
+          ctx.textAlign = 'center';
+          ctx.fillText('Play now at pinballonmonad.netlify.app | @omg14doteth', screenshotCanvas.width/2, screenshotCanvas.height - 15);
           
           // Return the canvas data URL
           return screenshotCanvas.toDataURL('image/png');
@@ -1115,18 +883,21 @@
           const ectx = emergencyCanvas.getContext('2d');
           
           // Draw simple background
-          ectx.fillStyle = '#8B5CF6';
+          ectx.fillStyle = '#000000';
           ectx.fillRect(0, 0, 400, 300);
           
           // Add text
-          ectx.fillStyle = 'white';
+          ectx.fillStyle = '#A37DFC';
           ectx.font = '20px Arial';
           ectx.textAlign = 'center';
-          ectx.fillText('Web3 Pinball Score', 200, 100);
-          ectx.fillText('Score: ' + lastKnownScore, 200, 150);
-          ectx.fillText('Transactions: ' + actionCount, 200, 180);
+          ectx.fillText('3D PINBALL SPACE CADET', 200, 50);
+          ectx.fillStyle = 'white';
+          ectx.fillText('Score: ' + lastKnownScore, 200, 120);
+          ectx.fillText('Transactions: ' + actionCount, 200, 150);
+          ectx.fillText('Gas Used: ' + totalGasUsed.toFixed(4), 200, 180);
           ectx.fillText('Monad Blockchain', 200, 220);
-          ectx.fillText('by @omg14doteth', 200, 250);
+          ectx.fillStyle = '#4299E1';
+          ectx.fillText('@omg14doteth', 200, 250);
           
           return emergencyCanvas.toDataURL('image/png');
         }
@@ -1134,7 +905,7 @@
 
       // Updated Share on Twitter function with correct Twitter handle
       function shareOnTwitter() {
-        const tweetText = `I scored ${lastKnownScore.toLocaleString()} points in Web3 Space Cadet Pinball and created ${actionCount} transactions on @monad_xyz blockchain! Let's break Monad by playing at pinballonmonad.netlify.app via @omg14doteth #MonadPinball #Web3Gaming`;
+        const tweetText = `I scored ${lastKnownScore.toLocaleString()} points in 3D Pinball Space Cadet and created ${actionCount} transactions on @monad_xyz blockchain! Play now at pinballonmonad.netlify.app via @omg14doteth #MonadPinball #Web3Gaming`;
         const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
         
         // Open Twitter in a new window
@@ -1215,22 +986,18 @@
         scoreCheckInterval = setInterval(checkGameState, 500);
       }
 
-      // Hook into the Module's postRun to know when the game is ready
-      const originalPostRun = Module.postRun;
-      Module.postRun = function () {
-        if (originalPostRun) {
-          originalPostRun();
-        }
-
-        // Mark the module as ready
+      // Add this to the Module postRun
+      if (!Module.postRun) Module.postRun = [];
+      Module.postRun.push(function() {
+        console.log("Module ready, game can start");
         Module.ready = true;
-        
-        // Start monitoring game state when game is ready
         startGameStateCheck();
         
-        // Game is active immediately
-        gameActive = true;
-      };
+        // Make sure canvas has focus
+        if (gameCanvas) {
+          gameCanvas.focus();
+        }
+      });
     });
   </script>
 </body>
